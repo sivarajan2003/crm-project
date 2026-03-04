@@ -10,6 +10,16 @@ import {
   BarChartOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
+import {
+  LayoutDashboard,
+  Package,
+  Users,
+  BarChart3,
+  Handshake,
+  ClipboardList,
+  Phone,
+  Settings
+} from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { RiseOutlined } from "@ant-design/icons";
@@ -97,6 +107,11 @@ const onOpenChange = (keys) => {
     label: "Administration",
     children: [
       {
+  key: "contact",
+  icon: <UserOutlined />,
+  label: "Contacts",
+},
+      {
         key: "users",
         icon: <UserOutlined />,
         label: "Users",
@@ -179,10 +194,22 @@ const onOpenChange = (keys) => {
   items={menuItems}
   onClick={(e) => {
 
-  const submenuItems = ["product","opportunities","activities","users","roles"];
+  const adminMenu = ["contact", "users", "roles"];
+  const salesMenu = ["product", "opportunities", "activities"];
 
-  if (!submenuItems.includes(e.key)) {
-    setOpenKeys([]);   // close menus only for main modules
+  // Keep Administration open
+  if (adminMenu.includes(e.key)) {
+    setOpenKeys(["admin"]);
+  }
+
+  // Keep Sales open
+  else if (salesMenu.includes(e.key)) {
+    setOpenKeys(["sales"]);
+  }
+
+  // Close all menus
+  else {
+    setOpenKeys([]);
   }
 
   navigate(`/${e.key}`);

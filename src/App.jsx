@@ -10,7 +10,8 @@ import Opportunities from "./pages/sales/Opportunities";
 import Activities from "./pages/sales/Activities";
 import Deals from "./pages/Deals";
 import Settings from "./pages/Settings";
-
+import Products from "./pages/Products";
+import Contact from "./pages/administration/Contact";
 function App() {
 
   const isAuth = localStorage.getItem("auth") === "true";
@@ -38,6 +39,8 @@ function App() {
           <Route path="opportunities" element={<Opportunities />} />
           <Route path="activities" element={<Activities />} />
           <Route path="deals" element={<Deals />} />
+          <Route path="products" element={<Products />} />
+          <Route path="contact" element={<Contact />} />
           <Route path="settings" element={<Settings />} />
 
         </Route>
