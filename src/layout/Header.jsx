@@ -4,11 +4,16 @@ import {
   MenuUnfoldOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-
+import { useNavigate } from "react-router-dom";
 const { Header } = Layout;
 const { Option } = Select;
 
 export default function AppHeader({ collapsed, setCollapsed }) {
+  const navigate = useNavigate();
+const handleLogout = () => {
+  localStorage.removeItem("auth");
+  window.location.href = "/";
+};
   return (
     <Header
       style={{
@@ -45,13 +50,18 @@ export default function AppHeader({ collapsed, setCollapsed }) {
         </Select>
 
         <Dropdown
-          menu={{
-            items: [
-              { key: "1", label: "Profile" },
-              { key: "2", label: "Logout" },
-            ],
-          }}
-        >
+  menu={{
+    items: [
+      { key: "1", label: "Profile" },
+      { key: "logout", label: "Logout" },
+    ],
+    onClick: ({ key }) => {
+  if (key === "logout") {
+    handleLogout();
+  }
+}
+  }}
+>
           <div
             style={{
               display: "flex",

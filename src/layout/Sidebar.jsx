@@ -11,16 +11,29 @@ import {
   SettingOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
 import { RiseOutlined } from "@ant-design/icons";
 const { Sider } = Layout;
 
 export default function Sidebar({ collapsed }) {
   const navigate = useNavigate();
   const location = useLocation();
+const [openKeys, setOpenKeys] = useState([]);
 
+const rootSubmenuKeys = ["sales", "admin"];
+const onOpenChange = (keys) => {
+  const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
+
+  if (rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
+    setOpenKeys(keys);
+  } else {
+    setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
+  }
+};
   const selectedKey = location.pathname.replace("/", "") || "dashboard";
 
   const menuItems = [
+    
   {
     key: "dashboard",
     icon: <DashboardOutlined />,
@@ -38,6 +51,7 @@ export default function Sidebar({ collapsed }) {
         icon: <AppstoreOutlined />,
         label: "Leads",
       },
+      
       {
         key: "opportunities",
         icon: <DollarOutlined />,
@@ -57,7 +71,11 @@ export default function Sidebar({ collapsed }) {
     icon: <UserOutlined />,
     label: "Customers",
   },
-
+{
+  key: "deals",
+  icon: <DollarOutlined />,
+  label: "Deals",
+},
   // PRODUCTS
   {
     key: "products",
@@ -99,22 +117,23 @@ export default function Sidebar({ collapsed }) {
 ];
 
   return (
-    <Sider
+   <Sider
   width={240}
   collapsedWidth={80}
   collapsible
   collapsed={collapsed}
+  trigger={null}
   style={{
-    background: "#ffffff",
-    borderRight: "1px solid #e5e7eb",
-
-    position: "fixed",     // 👈 ADD THIS
-    left: 0,
-    top: 0,
-    bottom: 0,
-    height: "100vh",
-    overflow: "auto"      
-  }}
+  background: "#ffffff",
+  borderRight: "1px solid #e5e7eb",
+  position: "fixed",
+  left: 0,
+  top: 0,
+  bottom: 0,
+  height: "100vh",
+  display: "flex",
+  flexDirection: "column"
+}}
 >
       {/* LOGO SECTION */}
 <div
@@ -155,8 +174,19 @@ export default function Sidebar({ collapsed }) {
   theme="light"
   mode="inline"
   selectedKeys={[selectedKey]}
+  openKeys={openKeys}
+  onOpenChange={onOpenChange}
   items={menuItems}
-  onClick={(e) => navigate(`/${e.key}`)}
+  onClick={(e) => {
+
+  const submenuItems = ["product","opportunities","activities","users","roles"];
+
+  if (!submenuItems.includes(e.key)) {
+    setOpenKeys([]);   // close menus only for main modules
+  }
+
+  navigate(`/${e.key}`);
+}}
   style={{
   borderRight: "none",
   marginTop: 15,
