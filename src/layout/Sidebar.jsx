@@ -10,6 +10,7 @@ import {
   BarChartOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
+import { Grid } from "antd";
 import {
   LayoutDashboard,
   Package,
@@ -72,6 +73,11 @@ const onOpenChange = (keys) => {
         icon: <PercentageOutlined />,
         label: "Activities",
       },
+      {
+  key: "invoices",
+  icon: <DollarOutlined />,
+  label: "Invoices",
+},
     ],
   },
 
@@ -111,11 +117,11 @@ const onOpenChange = (keys) => {
   icon: <UserOutlined />,
   label: "Contacts",
 },
-      {
-        key: "users",
-        icon: <UserOutlined />,
-        label: "Users",
-      },
+      // {
+      //   key: "users",
+      //   icon: <UserOutlined />,
+      //   label: "Users",
+      // },
       {
         key: "roles",
         icon: <PercentageOutlined />,
@@ -195,7 +201,7 @@ const onOpenChange = (keys) => {
   onClick={(e) => {
 
   const adminMenu = ["contact", "users", "roles"];
-  const salesMenu = ["product", "opportunities", "activities"];
+  const salesMenu = ["product", "opportunities", "activities", "invoices"];
 
   // Keep Administration open
   if (adminMenu.includes(e.key)) {
