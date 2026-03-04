@@ -34,11 +34,33 @@ export default function Dashboard() {
           gap: 10,
         }}
       >
-        <div>
+        {/* <div>
           <h2 style={{ margin: 0 }}>CRM Dashboard</h2>
           <p style={{ margin: 0, color: "gray" }}>Overview & Performance</p>
-        </div>
+        </div> */}
+         <div>
+      <div
+        style={{
+          fontSize: 26,
+          fontWeight: 700,
+          color: "#111827",
+          letterSpacing: "-0.5px",
+        }}
+      >
+        CRM Dashboard
+      </div>
 
+      <div
+        style={{
+          fontSize: 14,
+          color: "#6b7280",
+          marginTop: 4,
+          fontWeight: 400,
+        }}
+      >
+        Overview & Performance
+      </div>
+    </div>
         <Button type="primary">+ Add Lead</Button>
       </div>
 
