@@ -135,7 +135,7 @@ const totalPages = Math.ceil(filteredContacts.length / contactsPerPage);
     <div className="p-8 bg-gray-50 min-h-screen">
 
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
 
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Contacts</h1>
@@ -152,7 +152,7 @@ const totalPages = Math.ceil(filteredContacts.length / contactsPerPage);
 
       </div>
 
-<div className="bg-white border rounded-xl p-5 mb-6 flex items-center gap-3">
+<div className="bg-white border rounded-xl p-5 mb-6 flex flex-col md:flex-row md:items-center gap-3">
 
   {/* Search */}
   <div className="flex items-center border rounded-lg px-4 py-2 w-full bg-gray-50">
@@ -207,6 +207,9 @@ const totalPages = Math.ceil(filteredContacts.length / contactsPerPage);
       {/* CONTACT TABLE */}
 
       <div className="bg-white border rounded-xl overflow-hidden">
+
+{/* DESKTOP TABLE */}
+<div className="hidden md:block">
 
         <table className="w-full">
 
@@ -275,7 +278,66 @@ const totalPages = Math.ceil(filteredContacts.length / contactsPerPage);
 </tbody>
 
         </table>
-      <div className="flex justify-end items-center gap-2 p-4 border-t">
+        
+        </div>
+        {/* MOBILE CONTACT CARDS */}
+<div className="md:hidden space-y-4 p-4">
+
+  {currentContacts.map((c) => (
+
+    <div
+      key={c.id}
+      className="border rounded-xl p-4 bg-white shadow-sm"
+    >
+
+      {/* Name */}
+      <div className="flex items-center gap-3 mb-2">
+        <div className="bg-purple-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-semibold">
+          {c.name.charAt(0)}
+        </div>
+        <div>
+          <div className="font-semibold">{c.name}</div>
+          <div className="text-gray-500 text-sm">{c.role}</div>
+        </div>
+      </div>
+
+      {/* Contact */}
+      <div className="text-sm text-gray-600 flex items-center gap-2">
+        <Mail size={16}/>
+        {c.email}
+      </div>
+
+      <div className="text-sm text-gray-600 flex items-center gap-2 mt-1">
+        <Phone size={16}/>
+        {c.phone}
+      </div>
+
+      {/* Company */}
+      <div className="text-sm text-gray-700 flex items-center gap-2 mt-2">
+        <Building2 size={16}/>
+        {c.company}
+      </div>
+
+      {/* Status */}
+      <div className="mt-3">
+        <span
+          className={`px-3 py-1 rounded-full text-xs
+          ${
+            c.status === "Active"
+              ? "bg-green-100 text-green-700"
+              : "bg-blue-100 text-blue-700"
+          }`}
+        >
+          {c.status}
+        </span>
+      </div>
+
+    </div>
+
+  ))}
+
+</div>
+      <div className="flex flex-wrap justify-center md:justify-end items-center gap-2 p-4 border-t">
 
   {/* Previous */}
   <button

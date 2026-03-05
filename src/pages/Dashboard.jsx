@@ -5,8 +5,12 @@ import {
   PhoneOutlined,
   RiseOutlined,
 } from "@ant-design/icons";
+import { Grid } from "antd";
 //import { Progress } from "antd";
 export default function Dashboard() {
+
+  const { useBreakpoint } = Grid;
+  const screens = useBreakpoint();
   const columns = [
     { title: "Lead Name", dataIndex: "name" },
     { title: "Company", dataIndex: "company" },
@@ -25,15 +29,16 @@ export default function Dashboard() {
 
       {/* HEADER */}
       <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 20,
-          flexWrap: "wrap",
-          gap: 10,
-        }}
-      >
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: screens.xs ? "flex-start" : "center",
+    flexDirection: screens.xs ? "column" : "row",
+    marginBottom: 20,
+    flexWrap: "wrap",
+    gap: 10,
+  }}
+>
         {/* <div>
           <h2 style={{ margin: 0 }}>CRM Dashboard</h2>
           <p style={{ margin: 0, color: "gray" }}>Overview & Performance</p>
@@ -135,7 +140,41 @@ export default function Dashboard() {
   className="dashboard-card"
   style={{ borderRadius: 16  }}
           >
-            <Table columns={columns} dataSource={data} pagination={false} />
+            {/* DESKTOP TABLE */}
+{!screens.xs && !screens.sm && (
+  <Table columns={columns} dataSource={data} pagination={false} />
+)}
+
+{/* MOBILE CARD VIEW */}
+{(screens.xs || screens.sm) && (
+  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+    {data.map((item) => (
+      <div
+        key={item.key}
+        style={{
+          border: "1px solid #f1f5f9",
+          padding: 16,
+          borderRadius: 12,
+          background: "#fafafa",
+        }}
+      >
+        <div style={{ fontWeight: 600 }}>{item.name}</div>
+
+        <div style={{ fontSize: 13, color: "#6b7280" }}>
+          {item.company}
+        </div>
+
+        <div style={{ marginTop: 8 }}>
+          <b>Stage:</b> {item.stage}
+        </div>
+
+        <div style={{ color: "#10b981", fontWeight: 600 }}>
+          {item.value}
+        </div>
+      </div>
+    ))}
+  </div>
+)}
           </Card>
         </Col>
 
@@ -311,8 +350,14 @@ export default function Dashboard() {
     bordered={false}
     style={{ borderRadius: 16 }}
   >
-    <div style={{ display: "flex", alignItems: "center", gap: 40 }}>
-
+    <div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    flexDirection: screens.xs ? "column" : "row",
+    gap: 40,
+  }}
+>
       {/* Donut Chart */}
       <Progress
         type="circle"

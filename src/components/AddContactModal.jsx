@@ -40,11 +40,11 @@ export default function AddContactModal({ open, onClose, onAdd }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
 
-      <div className="bg-white w-[420px] p-6 rounded-xl shadow-lg">
+      <div className="bg-white w-[90%] sm:w-[420px] p-6 rounded-xl shadow-lg">
 
         <h2 className="text-xl font-semibold mb-4">Add Contact</h2>
 
-        <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row justify-end gap-3 mt-5">
 
           <input
             name="name"
@@ -103,7 +103,7 @@ export default function AddContactModal({ open, onClose, onAdd }) {
 
           <button
             onClick={onClose}
-            className="px-4 py-2 border rounded"
+            className="px-4 py-2 bg-purple-600 text-white rounded w-full sm:w-auto"
           >
             Cancel
           </button>

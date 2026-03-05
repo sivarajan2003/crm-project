@@ -19,11 +19,12 @@ import {
   DownOutlined
 } from "@ant-design/icons";
 import { useState } from "react";
-
+import { Grid } from "antd";
 const { Option } = Select;
 
 export default function Activities() {
-
+const { useBreakpoint } = Grid;
+const screens = useBreakpoint();
   const [searchText, setSearchText] = useState("");
 
   /* ================= DATA ================= */
@@ -104,8 +105,8 @@ export default function Activities() {
 
       {/* ================= FILTER BAR ================= */}
 
-      <Row gutter={12} style={{ marginBottom: 20 }}>
-        <Col>
+      <Row gutter={[12,12]} style={{ marginBottom: 20 }}>
+        <Col xs={24} sm={12} md={6}>
           <Button type="primary">
             All Activities <DownOutlined />
           </Button>
@@ -137,18 +138,18 @@ export default function Activities() {
 
         <Col flex="auto">
           <Input
-            prefix={<SearchOutlined />}
-            placeholder="Search activities..."
-            style={{ width: 260, float: "right" }}
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
+  prefix={<SearchOutlined />}
+  placeholder="Search activities..."
+  style={{
+    width: screens.xs ? "100%" : 260
+  }}
+/>
         </Col>
       </Row>
 
       {/* ================= SUMMARY CARDS ================= */}
 
-      <Row gutter={16} style={{ marginBottom: 24 }}>
+      <Row gutter={[16,16]} style={{ marginBottom: 24 }}>
         {[
           { title: "Upcoming", count: 16, color: "#10b981" },
           { title: "Overdue", count: 5, color: "#ef4444" },
@@ -169,7 +170,7 @@ export default function Activities() {
 
               <div
                 style={{
-                  fontSize: 28,
+                  fontSize: screens.xs ? 24 : 28,
                   fontWeight: 700,
                   marginTop: 8,
                   color: item.color
@@ -211,17 +212,18 @@ export default function Activities() {
               .filter((item) => item.section === section)
               .map((item) => (
                 <div
-                  key={item.id}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
+  style={{
+    display: "flex",
+    flexDirection: screens.xs ? "column" : "row",
+    justifyContent: "space-between",
+    alignItems: screens.xs ? "flex-start" : "center",
+    gap: screens.xs ? 10 : 0,
                     padding: "14px 0",
                     borderBottom: "1px solid #f1f5f9"
                   }}
                 >
                   {/* LEFT */}
-                  <div style={{ display: "flex", gap: 16 }}>
+                 <div style={{ display: "flex", gap: 16, width: "100%" }}>
                     <Avatar
                       size={42}
                       style={{

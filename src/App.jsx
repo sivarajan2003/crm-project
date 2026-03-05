@@ -7,6 +7,9 @@ import Product from "./pages/Product";
 import Reports from "./pages/Reports";
 import Customer from "./pages/Customer";
 import Opportunities from "./pages/sales/Opportunities";
+import Quotes from "./pages/sales/Quotes";
+
+
 import Activities from "./pages/sales/Activities";
 import Invoices from "./pages/sales/Invoices";
 import Deals from "./pages/Deals";
@@ -43,6 +46,7 @@ function App() {
           <Route path="reports" element={<Reports />} />
           <Route path="opportunities" element={<Opportunities />} />
           <Route path="activities" element={<Activities />} />
+          <Route path="quotes" element={<Quotes />} />
           <Route path="invoices" element={<Invoices />} />
           <Route path="deals" element={<Deals />} />
           <Route path="products" element={<Products />} />

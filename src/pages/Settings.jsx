@@ -3,7 +3,7 @@ import { UserOutlined, LockOutlined, BellOutlined, HomeOutlined } from "@ant-des
 
 export default function Settings() {
   return (
-    <div style={{ padding: 24, background: "#f3f4f6", minHeight: "100vh" }}>
+    <div style={{ padding: window.innerWidth < 768 ? 16 : 24, background: "#f3f4f6", minHeight: "100vh" }}>
 
       {/* ================= HEADER ================= */}
 
@@ -20,7 +20,7 @@ export default function Settings() {
 
         {/* ================= PROFILE SETTINGS ================= */}
 
-        <Col xs={24} lg={12}>
+        <Col xs={24} sm={24} md={12} lg={12}>
           <Card
             variant="borderless"
             style={{
@@ -36,10 +36,11 @@ export default function Settings() {
             <Input placeholder="Email Address" style={{ marginBottom: 12 }} />
             <Input placeholder="Phone Number" />
 
-            <Button
-              type="primary"
-              style={{ marginTop: 16, borderRadius: 8 }}
-            >
+           <Button
+type="primary"
+block
+style={{ marginTop: 16, borderRadius: 8 }}
+>
               Save Changes
             </Button>
           </Card>
@@ -47,7 +48,7 @@ export default function Settings() {
 
         {/* ================= COMPANY SETTINGS ================= */}
 
-        <Col xs={24} lg={12}>
+        <Col xs={24} sm={24} md={12} lg={12}>
           <Card
             variant="borderless"
             style={{
@@ -64,9 +65,10 @@ export default function Settings() {
             <Input placeholder="GST / Tax ID" />
 
             <Button
-              type="primary"
-              style={{ marginTop: 16, borderRadius: 8 }}
-            >
+type="primary"
+block
+style={{ marginTop: 16, borderRadius: 8 }}
+>
               Update Company
             </Button>
           </Card>
@@ -74,7 +76,7 @@ export default function Settings() {
 
         {/* ================= NOTIFICATIONS ================= */}
 
-        <Col xs={24} lg={12}>
+        <Col xs={24} sm={24} md={12} lg={12}>
           <Card
             variant="borderless"
             style={{
@@ -105,7 +107,7 @@ export default function Settings() {
 
         {/* ================= SECURITY ================= */}
 
-        <Col xs={24} lg={12}>
+        <Col xs={24} sm={24} md={12} lg={12}>
           <Card
             variant="borderless"
             style={{
@@ -122,9 +124,10 @@ export default function Settings() {
             <Input.Password placeholder="Confirm Password" />
 
             <Button
-              type="primary"
-              style={{ marginTop: 16, borderRadius: 8 }}
-            >
+type="primary"
+block
+style={{ marginTop: 16, borderRadius: 8 }}
+>
               Change Password
             </Button>
           </Card>

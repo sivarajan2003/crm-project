@@ -2,10 +2,13 @@ import { Card, Row, Col, Table, Input, Select, Button, Tag } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import AddLeads from "../components/AddLeads";
+import { Grid } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
 const { Option } = Select;
 
 export default function Product() {
+  const { useBreakpoint } = Grid;
+const screens = useBreakpoint();
 
   // 🔥 ORIGINAL DATA
 const originalData = [
@@ -145,7 +148,7 @@ const [modalOpen, setModalOpen] = useState(false);
     <div style={{ padding: 10 }}>
 
       {/* HEADER */}
-      <Row justify="space-between" align="middle" style={{ marginBottom: 20 }}>
+      <Row justify="space-between" align="middle" gutter={[16,16]} style={{ marginBottom: 20 }}>
 
   {/* LEFT SIDE */}
   <Col>
@@ -178,7 +181,7 @@ const [modalOpen, setModalOpen] = useState(false);
 
   {/* RIGHT SIDE BUTTONS */}
   <Col>
-    <div style={{ display: "flex", gap: 12 }}>
+    <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
 
       {/* FILTER BUTTON */}
       <Button
@@ -274,13 +277,16 @@ const [modalOpen, setModalOpen] = useState(false);
       </Card>
 
       {/* TABLE */}
-      <Card
+     <Card
   bordered={false}
   style={{
     borderRadius: 16,
     boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
   }}
 >
+
+{/* DESKTOP + TABLET TABLE */}
+{!screens.xs && (
   <Table
     columns={columns}
     dataSource={filteredData}
@@ -289,8 +295,54 @@ const [modalOpen, setModalOpen] = useState(false);
       showSizeChanger: false,
     }}
     scroll={{ x: true }}
-    className="custom-table"
   />
+)}
+
+{/* MOBILE CARD VIEW */}
+{screens.xs && (
+  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+    {filteredData.map((lead, index) => (
+      <div
+        key={lead.key}
+        style={{
+          border: "1px solid #f1f5f9",
+          padding: 16,
+          borderRadius: 12,
+          background: "#fafafa",
+        }}
+      >
+        <div style={{ fontWeight: 600, fontSize: 16 }}>
+          {index + 1}. {lead.name}
+        </div>
+
+        <div style={{ fontSize: 13, color: "#6b7280" }}>
+          {lead.company}
+        </div>
+
+        <div style={{ marginTop: 6 }}>
+          📧 {lead.email}
+        </div>
+
+        <div>
+          📞 {lead.phone}
+        </div>
+
+        <div style={{ marginTop: 8 }}>
+          <b>Status:</b> {lead.status}
+        </div>
+
+        <div>
+          <b>Value:</b> {lead.value}
+        </div>
+
+        <div>
+          <b>Assigned:</b> {lead.assigned}
+        </div>
+      </div>
+    ))}
+  </div>
+)}
+
 </Card>
       <AddLeads
   open={modalOpen}

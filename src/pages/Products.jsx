@@ -68,7 +68,7 @@ const handleAddProduct = (newProduct) => {
     <div className="p-8 bg-gray-50 min-h-screen">
 
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
 
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Products</h1>
@@ -91,7 +91,7 @@ Add Product
       {/* SEARCH */}
       <div className="bg-white border rounded-xl p-5 mb-6">
 
-        <div className="flex items-center border rounded-lg px-4 py-2 w-[350px] bg-gray-50">
+        <div className="flex items-center border rounded-lg px-4 py-2 w-full md:w-[350px] bg-gray-50">
 
           <Search size={18} className="text-gray-400"/>
 
@@ -114,10 +114,9 @@ Add Product
         {filteredProducts.map((product)=>(
           
           <div
-            key={product.id}
-            className="bg-white border rounded-xl p-6 flex justify-between items-center"
-          >
-
+  key={product.id}
+  className="bg-white border rounded-xl p-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4"
+>
             {/* LEFT */}
             <div className="flex items-center gap-4">
 
@@ -145,13 +144,13 @@ Add Product
 
 
             {/* RIGHT */}
-            <div className="text-right">
+            <div className="md:text-right">
 
               <div className="text-purple-600 font-bold text-xl mb-2">
                 {product.price}
               </div>
 
-              <button className="border px-4 py-2 rounded-lg text-sm hover:bg-gray-50">
+              <button className="border px-4 py-2 rounded-lg text-sm hover:bg-gray-50 w-full md:w-auto">
                 View Details
               </button>
 

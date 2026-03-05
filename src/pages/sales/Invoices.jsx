@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Search, Download, Send, Plus } from "lucide-react";
-
+import CreateInvoice from "../../components/CreateInvoice";
 const invoicesData = [
 {
 id:"INV-2026-001",
@@ -32,7 +32,7 @@ export default function Invoices(){
 
 const [search,setSearch] = useState("");
 const [filter,setFilter] = useState("All");
-
+const [showModal, setShowModal] = useState(false);
 const filteredInvoices = invoicesData.filter(inv=>{
 
 const matchSearch =
@@ -58,8 +58,7 @@ return(
 
 {/* HEADER */}
 
-<div className="flex justify-between items-center mb-6 flex-wrap gap-4">
-
+<div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
 <div>
 <h1 className="text-3xl font-bold">Invoices</h1>
 <p className="text-gray-500">
@@ -67,7 +66,10 @@ Manage your billing and payments
 </p>
 </div>
 
-<button className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg">
+<button
+onClick={()=>setShowModal(true)}
+className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg"
+>
 <Plus size={16}/>
 Create Invoice
 </button>
@@ -76,7 +78,7 @@ Create Invoice
 
 {/* SUMMARY CARDS */}
 
-<div className="grid md:grid-cols-3 gap-4 mb-6">
+<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
 
 <div className="bg-white p-5 rounded-xl shadow">
 <p className="text-gray-500">Total Amount</p>
@@ -103,8 +105,7 @@ Create Invoice
 {/* SEARCH + FILTER */}
 
 <div className="bg-white p-5 rounded-xl shadow mb-6 flex flex-col md:flex-row md:items-center gap-4">
-
-<div className="flex items-center border rounded-lg px-3 py-2 w-full md:w-[60%]">
+<div className="flex items-center border rounded-lg px-3 py-2 w-full md:w-[60%] lg:w-[40%]">
 <Search size={18} className="text-gray-400"/>
 <input
 placeholder="Search invoices, customer, status..."
@@ -141,7 +142,7 @@ ${filter===tab
 
 <div
 key={inv.id}
-className="bg-white p-5 rounded-xl shadow flex flex-col md:flex-row md:items-center justify-between gap-4"
+className="bg-white p-5 rounded-xl shadow flex flex-col md:flex-row md:items-center justify-between gap-4 w-full"
 >
 
 {/* LEFT */}
@@ -177,8 +178,7 @@ Issued: {inv.issued} · Due: {inv.due}
 </div>
 
 {/* RIGHT */}
-
-<div className="flex items-center gap-4">
+<div className="flex items-center justify-between w-full md:w-auto gap-4">
 
 <div className="text-right">
 
@@ -207,7 +207,11 @@ Amount
 ))}
 
 </div>
-
+{showModal && (
+<CreateInvoice
+closeModal={()=>setShowModal(false)}
+/>
+)}
 </div>
 
 );

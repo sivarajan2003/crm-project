@@ -96,7 +96,7 @@ return (
 
 <div className="p-6">
 
-<div className="flex justify-between items-center mb-6">
+<div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
 <h1 className="text-2xl font-bold">Roles & Permissions</h1>
 
 <button
@@ -109,7 +109,8 @@ Add Role
 
 </div>
 
-<div className="bg-white shadow rounded-lg overflow-hidden hidden md:block">
+<div className="bg-white shadow rounded-lg overflow-hidden">
+<div className="hidden md:block">
 <table className="w-full">
 
 <thead className="bg-gray-100">
@@ -158,6 +159,8 @@ className="text-red-500"
 </tbody>
 
 </table>
+</div>
+
 {/* Mobile Card View */}
 <div className="md:hidden space-y-4">
 

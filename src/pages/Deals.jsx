@@ -33,13 +33,12 @@ const dealsData = [
 ];
 export default function Deals() {
 
-  const [activeTab, setActiveTab] = useState("All");
-  const [search, setSearch] = useState("");
-const [showModal, setShowModal] = useState(false);
-const [deals, setDeals] = useState(dealsData);
+//   const [activeTab, setActiveTab] = useState("All");
+//   const [search, setSearch] = useState("");
+// const [showModal, setShowModal] = useState(false);
+// const [deals, setDeals] = useState(dealsData);
+
 const handleAddDeal = (newDeal) => {
-const [selectedDeal, setSelectedDeal] = useState(null);
-const [showDetails, setShowDetails] = useState(false);
   const formattedDeal = {
     id: Date.now(),
     title: newDeal.title,
@@ -60,7 +59,13 @@ const [showDetails, setShowDetails] = useState(false);
     "Closed Won",
     "Closed Lost",
   ];
+const [activeTab, setActiveTab] = useState("All");
+const [search, setSearch] = useState("");
+const [showModal, setShowModal] = useState(false);
+const [deals, setDeals] = useState(dealsData);
 
+const [selectedDeal, setSelectedDeal] = useState(null);
+const [showDetails, setShowDetails] = useState(false);
   const filteredDeals = deals.filter((deal) => {
 
     const statusMatch =
@@ -77,7 +82,7 @@ const [showDetails, setShowDetails] = useState(false);
     <div className="p-8 bg-gray-50 min-h-screen">
 
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
 
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
@@ -103,10 +108,10 @@ Add Deal
       {/* SEARCH + FILTER AREA */}
       <div className="bg-white border rounded-xl p-6 mb-6">
 
-        <div className="flex items-center gap-3 flex-wrap">
+       <div className="flex flex-col md:flex-row md:items-center gap-3 flex-wrap">
 
           {/* SEARCH */}
-          <div className="flex items-center border rounded-lg px-4 py-2 w-[350px] bg-gray-50">
+          <div className="flex items-center border rounded-lg px-4 py-2 w-full md:w-[350px] bg-gray-50">
 
             <Search size={18} className="text-gray-400"/>
 
@@ -148,7 +153,7 @@ Add Deal
           
           <div
             key={deal.id}
-            className="bg-white border rounded-xl p-6 flex justify-between items-center"
+            className="bg-white border rounded-xl p-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4"
           >
 
             {/* LEFT */}
@@ -179,13 +184,13 @@ Add Deal
 
 
             {/* RIGHT */}
-            <div className="text-right">
+            <div className="md:text-right">
 
               <div className="text-purple-600 font-bold text-xl mb-3">
                 {deal.value}
               </div>
 
-              <button
+             <button
   onClick={() => {
     setSelectedDeal(deal);
     setShowDetails(true);
@@ -207,15 +212,12 @@ open={showModal}
 onClose={() => setShowModal(false)}
 onAdd={handleAddDeal}
 />
-<button
-  onClick={() => {
-    setSelectedDeal(deal);
-    setShowDetails(true);
-  }}
-  className="border px-4 py-2 rounded-lg text-sm hover:bg-gray-50"
->
-  View Details
-</button>
+
+<DealDetailsModal
+open={showDetails}
+deal={selectedDeal}
+onClose={() => setShowDetails(false)}
+/>
     </div>
   );
 }

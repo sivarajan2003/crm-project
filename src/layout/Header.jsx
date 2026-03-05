@@ -42,8 +42,18 @@ const handleLogout = () => {
       </div>
 
       {/* RIGHT SIDE */}
-      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-        <Select defaultValue="all" style={{ width: 150 }}>
+      <div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    flexWrap: "wrap",
+  }}
+>
+        <Select
+  defaultValue="all"
+  style={{ width: window.innerWidth < 768 ? 120 : 150 }}
+>
           <Option value="all">All Branches</Option>
           <Option value="chennai">Chennai</Option>
           <Option value="salem">Salem</Option>

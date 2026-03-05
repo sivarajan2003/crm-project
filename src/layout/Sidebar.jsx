@@ -19,14 +19,16 @@ import {
   Handshake,
   ClipboardList,
   Phone,
-  Settings
+  Settings,FileText
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { RiseOutlined } from "@ant-design/icons";
 const { Sider } = Layout;
 
-export default function Sidebar({ collapsed }) {
+export default function Sidebar({ collapsed, setCollapsed }) {
+    const { useBreakpoint } = Grid;
+const screens = useBreakpoint();
   const navigate = useNavigate();
   const location = useLocation();
 const [openKeys, setOpenKeys] = useState([]);
@@ -68,6 +70,12 @@ const onOpenChange = (keys) => {
         icon: <DollarOutlined />,
         label: "Opportunities",
       },
+       {
+        key: "quotes",
+        icon: <FileText />,
+        label: "Quotes",
+      },
+      
       {
         key: "activities",
         icon: <PercentageOutlined />,
@@ -138,31 +146,47 @@ const onOpenChange = (keys) => {
 ];
 
   return (
-   <Sider
+  <Sider
   width={240}
-  collapsedWidth={80}
+  collapsedWidth={screens.xs ? 0 : 80}
   collapsible
   collapsed={collapsed}
   trigger={null}
-  style={{
+  breakpoint="lg"
+ style={{
   background: "#ffffff",
   borderRight: "1px solid #e5e7eb",
   position: "fixed",
+  zIndex: 1000,
   left: 0,
   top: 0,
   bottom: 0,
   height: "100vh",
   display: "flex",
-  flexDirection: "column"
+  flexDirection: "column",
 }}
 >
+  {/* {screens.xs && !collapsed && (
+  <div
+    onClick={() => setCollapsed(true)}
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: "transparent",
+      zIndex: 999,
+    }}
+  />
+)} */}
       {/* LOGO SECTION */}
 <div
   style={{
     height: 80,
     display: "flex",
     alignItems: "center",
-    justifyContent: collapsed ? "center" : "flex-start",
+    justifyContent: screens.xs ? "center" : collapsed ? "center" : "flex-start",
     paddingLeft: collapsed ? 0 : 20,
     borderBottom: "1px solid #e5e7eb",
   }}
@@ -201,7 +225,7 @@ const onOpenChange = (keys) => {
   onClick={(e) => {
 
   const adminMenu = ["contact", "users", "roles"];
-  const salesMenu = ["product", "opportunities", "activities", "invoices"];
+  const salesMenu = ["product", "opportunities","quotes", "activities", "invoices"];
 
   // Keep Administration open
   if (adminMenu.includes(e.key)) {
@@ -218,7 +242,11 @@ const onOpenChange = (keys) => {
     setOpenKeys([]);
   }
 
-  navigate(`/${e.key}`);
+ navigate(`/${e.key}`);
+
+if (screens.xs) {
+  setCollapsed(true);
+}
 }}
   style={{
   borderRight: "none",

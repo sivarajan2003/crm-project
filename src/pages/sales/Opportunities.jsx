@@ -1,8 +1,11 @@
 import { Card, Row, Col, Table, Input, Select, Button } from "antd";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
 import { useState } from "react";
+import { Grid } from "antd";
 const { Option } = Select;
 export default function Opportunities() {
+  const { useBreakpoint } = Grid;
+const screens = useBreakpoint();
 const [viewType, setViewType] = useState("all");
   const [stageFilter, setStageFilter] = useState("all");
   const [searchText, setSearchText] = useState("");
@@ -155,8 +158,8 @@ const filteredData = data.filter((item) => {
 
       {/* ================= FILTERS ================= */}
 
-      <Row gutter={12} style={{ marginBottom: 20 }}>
-  <Col>
+      <Row gutter={[12,12]} style={{ marginBottom: 20 }}>
+  <Col xs={24} sm={12} md={6}>
     <Select
       value={viewType}
       style={{ width: 180 }}
@@ -167,7 +170,7 @@ const filteredData = data.filter((item) => {
     </Select>
   </Col>
 
-  <Col>
+  <Col xs={24} sm={12} md={6}>
     <Select
       value={stageFilter}
       style={{ width: 180 }}
@@ -181,7 +184,7 @@ const filteredData = data.filter((item) => {
     </Select>
   </Col>
 
-  <Col>
+  <Col xs={24} sm={12} md={6}>
     <Input
       prefix={<SearchOutlined />}
       placeholder="Search..."
@@ -193,7 +196,7 @@ const filteredData = data.filter((item) => {
 </Row>
       {/* ================= SUMMARY CARDS ================= */}
 
-      <Row gutter={16} style={{ marginBottom: 24 }}>
+      <Row gutter={[16,16]} style={{ marginBottom: 24 }}>
         {[
           { title: "Open Deals", count: 24, amount: "$580,000" },
           { title: "In Negotiation", count: 8, amount: "$150,000" },
@@ -202,13 +205,15 @@ const filteredData = data.filter((item) => {
         ].map((item, index) => (
           <Col xs={24} sm={12} md={6} key={index}>
             <Card
-              bordered={false}
-              style={{
-                borderRadius: 14,
-                background: "#ffffff",
-                boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
-              }}
-            >
+  bordered={false}
+  style={{
+    borderRadius: 14,
+    background: "#ffffff",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
+    padding: "8px 0",
+    height: "100%"
+  }}
+>
               <div style={{ fontSize: 14, color: "#6b7280" }}>
                 {item.title}
               </div>
@@ -253,7 +258,9 @@ const filteredData = data.filter((item) => {
           Opportunities Pipeline
         </div>
 
-        <Table
+        {/* DESKTOP + TABLET TABLE */}
+{!screens.xs && !screens.sm && (
+<Table
   columns={columns}
   dataSource={filteredData}
   pagination={{
@@ -263,6 +270,50 @@ const filteredData = data.filter((item) => {
     onChange: (page) => setCurrentPage(page),
   }}
 />
+)}
+
+{/* MOBILE CARD VIEW */}
+{(screens.xs || screens.sm) && (
+<div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+  {filteredData.map((item, index) => (
+    <div
+      key={item.key}
+      style={{
+        border: "1px solid #f1f5f9",
+        padding: 16,
+        borderRadius: 12,
+        background: "#fafafa",
+      }}
+    >
+
+      <div style={{ fontWeight: 600, fontSize: 16 }}>
+        {index + 1}. {item.deal}
+      </div>
+
+      <div style={{ color: "#6b7280", fontSize: 13 }}>
+        {item.company}
+      </div>
+
+      <div style={{ marginTop: 6 }}>
+        <b>Stage:</b> {item.stage}
+      </div>
+
+      <div>
+        <b>Value:</b> ${item.value}
+      </div>
+
+      <div>
+        <b>Close Date:</b> {item.closeDate}
+      </div>
+
+      <div>
+        <b>Owner:</b> {item.owner}
+      </div>
+
+    </div>
+  ))}
+</div>
+)}
       </Card>
 
     </div>

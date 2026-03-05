@@ -1,4 +1,4 @@
-import { Card, Row, Col, Table, Input, Select, Tag, Avatar } from "antd";
+import { Card, Row, Col, Table, Input, Select, Tag, Avatar, Grid  } from "antd";
 import { SearchOutlined, UserOutlined } from "@ant-design/icons";
 import {
   
@@ -8,7 +8,8 @@ import {
 const { Option } = Select;
 
 export default function Customer() {
-
+const { useBreakpoint } = Grid;
+const screens = useBreakpoint();
   const columns = [
     {
       title: "Customer",
@@ -197,10 +198,11 @@ export default function Customer() {
 
         {/* SEARCH + FILTER */}
         <Row
-          gutter={[16, 16]}
-          justify="space-between"
-          style={{ marginBottom: 20 }}
-        >
+  gutter={[16, 16]}
+  justify="space-between"
+  align="middle"
+  style={{ marginBottom: 20 }}
+>
           <Col xs={24} md={8}>
             <Input
               placeholder="Search customer..."
@@ -216,12 +218,52 @@ export default function Customer() {
           </Col>
         </Row>
 
-        <Table
-          columns={columns}
-          dataSource={data}
-          pagination={{ pageSize: 5 }}
-          scroll={{ x: true }}
-        />
+        {/* DESKTOP + TABLET TABLE */}
+{!screens.xs && (
+  <Table
+    columns={columns}
+    dataSource={data}
+    pagination={{ pageSize: 5 }}
+    scroll={{ x: true }}
+  />
+)}
+
+{/* MOBILE CARD VIEW */}
+{screens.xs && (
+  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+    {data.map((item) => (
+      <Card key={item.key} bordered style={{ borderRadius: 12 }}>
+        
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <Avatar icon={<UserOutlined />} />
+          <div>
+            <div style={{ fontWeight: 600 }}>{item.name}</div>
+            <div style={{ fontSize: 12, color: "gray" }}>{item.company}</div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 10 }}>
+          <b>Phone:</b> {item.phone}
+        </div>
+
+        <div>
+          <b>Email:</b> {item.email}
+        </div>
+
+        <div>
+          <b>Country:</b> {item.country}
+        </div>
+
+        <div style={{ marginTop: 6 }}>
+          <Tag color={item.status === "Active" ? "green" : "red"}>
+            {item.status}
+          </Tag>
+        </div>
+
+      </Card>
+    ))}
+  </div>
+)}
       </Card>
     </div>
   );
