@@ -8,7 +8,7 @@ import Reports from "./pages/Reports";
 import Customer from "./pages/Customer";
 import Opportunities from "./pages/sales/Opportunities";
 import Quotes from "./pages/sales/Quotes";
-
+import ProtectedRoute from "./components/ProtectedRoute";
 
 import Activities from "./pages/sales/Activities";
 import Invoices from "./pages/sales/Invoices";
@@ -29,16 +29,17 @@ function App() {
       <Routes>
 
         {/* LOGIN PAGE */}
-        <Route
-          path="/"
-          element={isAuth ? <Navigate to="/dashboard" /> : <Login />}
-        />
+       <Route
+  path="/login"
+  element={isAuth ? <Navigate to="/dashboard" /> : <Login />}
+/>
 
         {/* CRM LAYOUT */}
         <Route
-          path="/"
-          element={isAuth ? <MainLayout /> : <Navigate to="/" />}
-        >
+  path="/"
+  element={isAuth ? <MainLayout /> : <Navigate to="/login" />}
+>
+  <Route index element={<Navigate to="dashboard" />} />
 
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="product" element={<Product />} />

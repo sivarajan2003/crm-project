@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Mail, Eye } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
 export default function Login() {
-
+const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -11,7 +11,7 @@ export default function Login() {
     if (email === "admin@gmail.com" && password === "12345678") {
 
       localStorage.setItem("auth", "true");
-      window.location.href = "/dashboard";
+navigate("/dashboard");
 
     } else {
 
