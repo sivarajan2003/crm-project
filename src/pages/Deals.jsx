@@ -2,222 +2,215 @@ import { useState } from "react";
 import { Search, Calendar, Plus } from "lucide-react";
 import AddDealModal from "../components/AddDealModal";
 import DealDetailsModal from "../components/DealDetailsModal";
+import { motion } from "framer-motion";
+
 const dealsData = [
   {
-    id: 1,
-    title: "Enterprise License - Acme Corp",
-    company: "Acme Corp",
-    owner: "Sarah Johnson",
-    status: "Negotiation",
-    value: "₹45,000",
-    close: "3/15/2026",
+    id: 1, title: "Enterprise License - Acme Corp", company: "Acme Corp", owner: "Sarah Johnson",
+    status: "Negotiation", value: "₹45,000", close: "3/15/2026",
   },
   {
-    id: 2,
-    title: "Cloud Migration Project",
-    company: "TechStart Inc",
-    owner: "Michael Chen",
-    status: "Proposal",
-    value: "₹78,000",
-    close: "3/20/2026",
+    id: 2, title: "Cloud Migration Project", company: "TechStart Inc", owner: "Michael Chen",
+    status: "Proposal", value: "₹78,000", close: "3/20/2026",
   },
   {
-    id: 3,
-    title: "Annual Support Package",
-    company: "Global Solutions",
-    owner: "David Park",
-    status: "Qualified",
-    value: "₹32,000",
-    close: "3/25/2026",
+    id: 3, title: "Annual Support Package", company: "Global Solutions", owner: "David Park",
+    status: "Qualified", value: "₹32,000", close: "3/25/2026",
   },
 ];
+
 export default function Deals() {
+  const tabs = [
+    "All", "Lead", "Qualified", "Proposal", "Negotiation", "Closed Won", "Closed Lost",
+  ];
+  const [activeTab, setActiveTab] = useState("All");
+  const [search, setSearch] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [deals, setDeals] = useState(dealsData);
 
-//   const [activeTab, setActiveTab] = useState("All");
-//   const [search, setSearch] = useState("");
-// const [showModal, setShowModal] = useState(false);
-// const [deals, setDeals] = useState(dealsData);
+  const [selectedDeal, setSelectedDeal] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
 
-const handleAddDeal = (newDeal) => {
-  const formattedDeal = {
-    id: Date.now(),
-    title: newDeal.title,
-    company: newDeal.company,
-    owner: newDeal.owner,
-    status: newDeal.status,
-    value: `₹${newDeal.value}`,   // format value
-    close: newDeal.close
+  const handleAddDeal = (newDeal) => {
+    const formattedDeal = {
+      id: Date.now(),
+      title: newDeal.title,
+      company: newDeal.company,
+      owner: newDeal.owner,
+      status: newDeal.status,
+      value: `₹${newDeal.value}`,
+      close: newDeal.close
+    };
+    setDeals([...deals, formattedDeal]);
   };
 
-  setDeals([...deals, formattedDeal]);
-};  const tabs = [
-    "All",
-    "Lead",
-    "Qualified",
-    "Proposal",
-    "Negotiation",
-    "Closed Won",
-    "Closed Lost",
-  ];
-const [activeTab, setActiveTab] = useState("All");
-const [search, setSearch] = useState("");
-const [showModal, setShowModal] = useState(false);
-const [deals, setDeals] = useState(dealsData);
-
-const [selectedDeal, setSelectedDeal] = useState(null);
-const [showDetails, setShowDetails] = useState(false);
   const filteredDeals = deals.filter((deal) => {
-
-    const statusMatch =
-      activeTab === "All" || deal.status === activeTab;
-
+    const statusMatch = activeTab === "All" || deal.status === activeTab;
     const searchMatch =
       deal.title.toLowerCase().includes(search.toLowerCase()) ||
       deal.company.toLowerCase().includes(search.toLowerCase());
-
     return statusMatch && searchMatch;
   });
 
+  // Dutch Animated Styles mapping
+  const listAnimation = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i) => ({
+      opacity: 1, y: 0,
+      transition: { delay: i * 0.1, duration: 0.4, ease: "easeOut" }
+    })
+  };
+
+  const fontInter = { fontFamily: '"Inter", sans-serif' };
+
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="p-4 md:p-6 bg-[#f8fafc] min-h-screen" style={fontInter}>
 
-      {/* HEADER */}
+      {/* ================= HEADER ================= */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
-
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-[26px] tracking-[-0.5px] font-bold text-[#111827] leading-tight">
             Deals
           </h1>
-
-          <p className="text-gray-500">
+          <p className="text-[14px] text-[#6b7280] mt-1">
             Track your sales opportunities
           </p>
         </div>
 
         <button
-onClick={() => setShowModal(true)}
-className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-5 py-2 rounded-lg shadow"
->
-<Plus size={16}/>
-Add Deal
-</button>
-
+          onClick={() => setShowModal(true)}
+          className="flex items-center gap-2 bg-[#1677ff] hover:bg-[#0958d9] transition-colors text-white px-4 h-10 rounded-lg font-medium text-[14px] shadow-sm"
+        >
+          <Plus size={18}/>
+          Add Deal
+        </button>
       </div>
 
-
-      {/* SEARCH + FILTER AREA */}
-      <div className="bg-white border rounded-xl p-6 mb-6">
-
-       <div className="flex flex-col md:flex-row md:items-center gap-3 flex-wrap">
+      {/* ================= SEARCH + FILTER AREA ================= */}
+      <div className="bg-white p-4 lg:px-5 rounded-[12px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#e5e7eb] mb-6">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
 
           {/* SEARCH */}
-          <div className="flex items-center border rounded-lg px-4 py-2 w-full md:w-[350px] bg-gray-50">
-
-            <Search size={18} className="text-gray-400"/>
-
+          <div className="flex items-center gap-3 w-full lg:max-w-sm bg-[#f9fafb] border border-[#d1d5db] px-3 h-10 rounded-lg shrink-0">
+            <Search size={18} className="text-[#9ca3af]"/>
             <input
               type="text"
               placeholder="Search deals..."
-              className="outline-none bg-transparent ml-2 w-full"
+              className="outline-none bg-transparent w-full text-[14px] text-[#111827]"
               value={search}
-              onChange={(e)=>setSearch(e.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
+              style={fontInter}
             />
-
           </div>
 
-          {/* TABS */}
-          {tabs.map((tab)=>(
-            <button
-              key={tab}
-              onClick={()=>setActiveTab(tab)}
-              className={`px-4 py-2 rounded-lg border text-sm font-medium
-              ${
-                activeTab === tab
-                ? "bg-purple-600 text-white border-purple-600"
-                : "bg-white text-gray-700"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+          {/* TABS / PILLS */}
+          <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-hide w-full">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 h-10 rounded-lg text-[13px] font-medium transition-all whitespace-nowrap
+                ${
+                  activeTab === tab
+                  ? "bg-[#1890ff] text-white shadow-md shadow-blue-500/20 border-none"
+                  : "bg-white border text-[#4b5563] hover:bg-gray-50 hover:border-[#9ca3af]"
+                }`}
+                style={{ borderColor: activeTab === tab ? 'transparent' : '#d1d5db' }}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
 
         </div>
-
       </div>
 
-
-      {/* DEAL LIST */}
+      {/* ================= DEAL LIST ================= */}
       <div className="space-y-4">
-
-        {filteredDeals.map((deal)=>(
-          
-          <div
+        {filteredDeals.map((deal, i) => (
+          <motion.div
             key={deal.id}
-            className="bg-white border rounded-xl p-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4"
+            custom={i}
+            initial="hidden"
+            animate="visible"
+            variants={listAnimation}
+            className="bg-white p-5 lg:px-6 rounded-[14px] shadow-[0_6px_18px_rgba(15,23,42,0.06)] border border-[#transparent] flex flex-col md:flex-row md:justify-between md:items-center gap-4 hover:border-[#e2e8f0] hover:shadow-[0_10px_30px_rgba(2,6,23,0.08)] transition-all"
           >
-
             {/* LEFT */}
             <div>
-
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-[17px] font-bold text-[#111827]">
                 {deal.title}
               </h3>
 
-              <p className="text-gray-500 mt-1">
-                {deal.company} · {deal.owner}
+              <p className="text-[#6b7280] text-[13px] mt-1 font-medium">
+                <span className="text-[#4b5563]">{deal.company}</span> <span className="mx-1">•</span> {deal.owner}
               </p>
 
-              <div className="flex items-center gap-4 mt-3">
-
-                <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
+              <div className="flex flex-wrap items-center gap-4 mt-4">
+                {/* Dynamically colored Dutch Badge */}
+                <span className={`px-3 py-1 rounded-[6px] text-[11px] font-bold tracking-[0.5px] uppercase
+                  ${
+                    deal.status === "Closed Won" ? "bg-[#d1fae5] text-[#059669]" :
+                    deal.status === "Closed Lost" ? "bg-[#fee2e2] text-[#dc2626]" :
+                    deal.status === "Negotiation" ? "bg-[#fef3c7] text-[#d97706]" :
+                    deal.status === "Proposal" ? "bg-[#e0e7ff] text-[#4f46e5]" :
+                    "bg-[#f3f4f6] text-[#4b5563]"
+                  }`}
+                >
                   {deal.status}
                 </span>
 
-                <span className="flex items-center text-gray-500 text-sm">
-                  <Calendar size={16} className="mr-1"/>
-                  Close: {deal.close}
+                <span className="flex items-center text-[#6b7280] text-[13px] font-medium">
+                  <Calendar size={15} className="mr-1.5 text-[#9ca3af]"/>
+                  Close: <span className="ml-1 text-[#4b5563]">{deal.close}</span>
                 </span>
-
               </div>
-
             </div>
 
-
-            {/* RIGHT */}
-            <div className="md:text-right">
-
-              <div className="text-purple-600 font-bold text-xl mb-3">
-                {deal.value}
+            {/* RIGHT (Amounts & Actions) */}
+            <div className="md:text-right flex flex-col items-start md:items-end border-t md:border-none border-gray-100 pt-4 md:pt-0 mt-2 md:mt-0">
+              
+              <div className="mb-3">
+                 <p className="text-[#9ca3af] text-[12px] uppercase tracking-wide font-semibold mb-0.5 mt-0">Value</p>
+                 {/* NUMBERS ARE NOW BLACK PER USER REQUEST */}
+                 <div className="text-[#111827] font-[800] text-[22px] leading-none">
+                   {deal.value}
+                 </div>
               </div>
 
-             <button
-  onClick={() => {
-    setSelectedDeal(deal);
-    setShowDetails(true);
-  }}
-  className="border px-4 py-2 rounded-lg text-sm hover:bg-gray-50"
->
-  View Details
-</button>
-
+              <button
+                onClick={() => {
+                  setSelectedDeal(deal);
+                  setShowDetails(true);
+                }}
+                className="flex items-center justify-center border border-[#d1d5db] bg-white text-[#4b5563] hover:text-[#1890ff] hover:border-[#1890ff] px-4 h-9 rounded-lg text-[13px] font-medium transition-colors hover:bg-blue-50"
+              >
+                View Details
+              </button>
             </div>
 
-          </div>
-
+          </motion.div>
         ))}
 
+        {filteredDeals.length === 0 && (
+          <div className="text-center py-12 bg-white rounded-[14px] border border-dashed border-gray-300">
+             <p className="text-[#6b7280] font-medium text-[14px]">No deals found matching your search.</p>
+          </div>
+        )}
       </div>
-<AddDealModal
-open={showModal}
-onClose={() => setShowModal(false)}
-onAdd={handleAddDeal}
-/>
 
-<DealDetailsModal
-open={showDetails}
-deal={selectedDeal}
-onClose={() => setShowDetails(false)}
-/>
+      {/* ================= MODALS ================= */}
+      <AddDealModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onAdd={handleAddDeal}
+      />
+
+      <DealDetailsModal
+        open={showDetails}
+        deal={selectedDeal}
+        onClose={() => setShowDetails(false)}
+      />
     </div>
   );
 }

@@ -1,14 +1,16 @@
-import { Modal, Form, Input, Button, Switch } from "antd";
+import { Modal, Input, Form, Button, Switch } from "antd";
 
 export default function AddLeads({ open, onClose, onSave }) {
   const [form] = Form.useForm();
 
-  const handleFinish = (values) => {
-    onSave({
-      key: Date.now(),
-      ...values,
+  const handleSubmit = () => {
+    form.validateFields().then(values => {
+      onSave({
+        key: Date.now(),
+        ...values
+      });
+      form.resetFields();
     });
-    form.resetFields();
   };
 
   return (
@@ -17,51 +19,45 @@ export default function AddLeads({ open, onClose, onSave }) {
       open={open}
       onCancel={onClose}
       footer={null}
+      centered
+      width={500}
     >
-      <Form layout="vertical" form={form} onFinish={handleFinish}>
+      <Form form={form} layout="vertical">
 
-        <Form.Item
-          name="name"
-          label="Lead Name"
-          rules={[{ required: true, message: "Enter Lead Name" }]}
+        <Form.Item label="Lead Name" name="name" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+
+        <Form.Item label="Company" name="company" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+
+        <Form.Item label="Email" name="email">
+          <Input />
+        </Form.Item>
+
+        <Form.Item label="Phone" name="phone">
+          <Input />
+        </Form.Item>
+
+        <Form.Item label="Value" name="value">
+          <Input placeholder="₹ Amount"/>
+        </Form.Item>
+
+        <Form.Item label="Assigned To" name="assigned">
+          <Input />
+        </Form.Item>
+
+        <Form.Item label="Status" name="status">
+          <Switch defaultChecked />
+        </Form.Item>
+
+        <Button
+          type="primary"
+          block
+          style={{ marginTop: 10 }}
+          onClick={handleSubmit}
         >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          name="company"
-          label="Company"
-          rules={[{ required: true }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item name="email" label="Email">
-          <Input />
-        </Form.Item>
-
-        <Form.Item name="phone" label="Phone">
-          <Input />
-        </Form.Item>
-
-        <Form.Item name="value" label="Value">
-          <Input placeholder="₹ Amount" />
-        </Form.Item>
-
-        <Form.Item name="assigned" label="Assigned To">
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          name="active"
-          label="Status"
-          valuePropName="checked"
-          initialValue={true}
-        >
-          <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
-        </Form.Item>
-
-        <Button type="primary" htmlType="submit" block>
           Save Lead
         </Button>
 

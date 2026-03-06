@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Mail, Eye } from "lucide-react";
+import { Mail, Eye,  Lock } from "lucide-react";
+import { Briefcase } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 export default function Login() {
 const navigate = useNavigate();
@@ -8,28 +9,34 @@ const navigate = useNavigate();
 
   const handleLogin = () => {
 
-    if (email === "admin@gmail.com" && password === "12345678") {
+  if (email === "admin@gmail.com" && password === "12345678") {
 
-      localStorage.setItem("auth", "true");
-navigate("/dashboard");
+    localStorage.setItem("auth", "true");
 
-    } else {
+    navigate("/");   // change here
 
-      alert("Invalid Email or Password");
+  } else {
 
-    }
+    alert("Invalid Email or Password");
 
-  };
+  }
 
+};
   return (
     <div className="login-wrapper">
 
       <div className="login-card">
 
-        {/* LOGO */}
+        {/* LOGO 
         <div className="logo-box">
           <img src="/logo.png" width="28" />
-        </div>
+        </div>*/}
+        {/* LOGIN ICON */}
+
+
+<div className="login-icon">
+  <Briefcase size={28} color="#ffffff" />
+</div>
 
         <h2 className="login-title">Welcome Back</h2>
         <p className="login-sub">Sign in to your account</p>
