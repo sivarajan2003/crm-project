@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 
 const { Option } = Select;
-const { Text } = Typography;
+const { Title,Text } = Typography;
 
 export default function Opportunities() {
   const { useBreakpoint } = Grid;
@@ -141,15 +141,17 @@ export default function Opportunities() {
   return (
     <div style={styles.page}>
       {/* ================= HEADER ================= */}
-      <Row justify="space-between" align="middle" style={{ marginBottom: 24, flexWrap: "wrap", gap: 16 }}>
-        <Col>
-          <div style={{ fontSize: 26, fontWeight: 700, color: "#111827", letterSpacing: "-0.5px", fontFamily: '"Inter", sans-serif' }}>
-            Opportunities
-          </div>
-          <div style={{ fontSize: 14, color: "#6b7280", marginTop: 4, fontWeight: 400, fontFamily: '"Inter", sans-serif' }}>
-            Manage and track your sales pipeline
-          </div>
-        </Col>
+      
+        <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+  <Col>
+    <Title level={2} style={{ margin: 0 }}>
+      Opportunities
+    </Title>
+
+    <Text type="secondary">
+       Manage and track your sales pipeline
+    </Text>
+  </Col>
 
         <Col>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>

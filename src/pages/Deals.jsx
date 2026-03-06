@@ -3,7 +3,7 @@ import { Search, Calendar, Plus } from "lucide-react";
 import AddDealModal from "../components/AddDealModal";
 import DealDetailsModal from "../components/DealDetailsModal";
 import { motion } from "framer-motion";
-
+import { Typography } from "antd";
 const dealsData = [
   {
     id: 1, title: "Enterprise License - Acme Corp", company: "Acme Corp", owner: "Sarah Johnson",
@@ -27,7 +27,7 @@ export default function Deals() {
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [deals, setDeals] = useState(dealsData);
-
+  const { Title, Text } = Typography;
   const [selectedDeal, setSelectedDeal] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
 
@@ -69,13 +69,14 @@ export default function Deals() {
       {/* ================= HEADER ================= */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-[26px] tracking-[-0.5px] font-bold text-[#111827] leading-tight">
-            Deals
-          </h1>
-          <p className="text-[14px] text-[#6b7280] mt-1">
-            Track your sales opportunities
-          </p>
-        </div>
+  <Title level={2} style={{ margin: 0 }}>
+    Deals
+  </Title>
+
+  <Text type="secondary">
+    Track your sales opportunities
+  </Text>
+</div>
 
         <button
           onClick={() => setShowModal(true)}

@@ -5,7 +5,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 //import { useTheme } from "../../context/ThemeContext";
 import { Popover, Tooltip, Grid } from "antd";
-
+import { Megaphone, MessageSquare } from "lucide-react";
+//import { MessageSquare } from "lucide-react";
 // Ant Design Icons
 import {
   DashboardOutlined,
@@ -142,6 +143,29 @@ const sidebarBgColor = "#ffffff";
       icon: <BarChartOutlined style={{ fontSize: 18 }} />,
       label: "Reports",
     },
+    // MARKETING GROUP
+{
+  key: "marketing",
+  icon: <Megaphone size={18} />,
+  label: "Marketing",
+  children: [
+    {
+  key: "marketing-dashboard",
+  icon: <BarChartOutlined style={{ fontSize: 18 }} />,
+  label: "Overview",
+},
+    {
+      key: "campaigns",
+      icon: <RiseOutlined style={{ fontSize: 18 }} />,
+      label: "Campaigns",
+    },
+    {
+      key: "whatsapp-campaign",
+      icon: <MessageSquare size={18} />,
+      label: "WhatsApp Campaign",
+    },
+  ],
+},
     // ADMINISTRATION GROUP
     {
       key: "admin",
@@ -163,17 +187,36 @@ const sidebarBgColor = "#ffffff";
   ];
 
   // Set the correct menu folder open on mount / navigate if it matches child keys
-  useEffect(() => {
-    const adminMenu = ["contact", "users", "roles", "admin"];
-    const salesMenu = ["product", "opportunities", "quotes", "activities", "invoices", "sales"];
-    
-    if (adminMenu.includes(selectedKey)) {
-        setOpenMenu("admin");
-    } else if (salesMenu.includes(selectedKey)) {
-        setOpenMenu("sales");
-    }
-  }, [selectedKey]);
+useEffect(() => {
+  const adminMenu = ["contact", "users", "roles", "admin"];
 
+  const salesMenu = [
+    "product",
+    "opportunities",
+    "quotes",
+    "activities",
+    "invoices",
+    "sales"
+  ];
+
+  const marketingMenu = [
+    "marketing-dashboard",
+    "campaigns",
+    "whatsapp-campaign",
+    "marketing"
+  ];
+
+  if (adminMenu.includes(selectedKey)) {
+    setOpenMenu("admin");
+  } 
+  else if (salesMenu.includes(selectedKey)) {
+    setOpenMenu("sales");
+  } 
+  else if (marketingMenu.includes(selectedKey)) {
+    setOpenMenu("marketing");
+  }
+
+}, [selectedKey]);
   // Helper for determining active state
   const isActive = (itemKey) => {
     if (!itemKey) return false;

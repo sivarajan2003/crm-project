@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Plus, Edit, Trash2, Shield, Users, Lock } from "lucide-react";
 import AddRoleModal from "../../components/AddRoleModal";
 import { motion } from "framer-motion";
+import { Typography } from "antd";
 
 export default function RolesPermissions() {
   const [roles, setRoles] = useState([
@@ -18,7 +19,7 @@ export default function RolesPermissions() {
   const [showModal, setShowModal] = useState(false);
   const [editRole, setEditRole] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
-
+const { Title, Text } = Typography;
   const handleAddRole = (newRole) => {
     if (isEdit) {
       setRoles(roles.map(r => r.id === editRole.id ? { ...r, ...newRole } : r));
@@ -39,7 +40,7 @@ export default function RolesPermissions() {
     setShowModal(true);
   };
 
-  // Dutch Animated Layout mapping
+ 
   const layoutAnimation = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut", delay: 0.1 } }
@@ -52,15 +53,16 @@ export default function RolesPermissions() {
 
       {/* ================= HEADER ================= */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
-        <div>
-          <h1 className="text-[26px] tracking-[-0.5px] font-bold text-[#111827] leading-tight">
-            Roles & Permissions
-          </h1>
-          <p className="text-[14px] text-[#6b7280] mt-1">
-            Manage user access and security levels
-          </p>
-        </div>
+        
+<div>
+  <Title level={2} style={{ margin: 0 }}>
+   Roles & Permissions
+  </Title>
 
+  <Text type="secondary">
+     Manage user access and security levels
+  </Text>
+</div>
         <button
           onClick={() => setShowModal(true)}
           className="flex items-center gap-2 bg-[#1677ff] hover:bg-[#0958d9] transition-colors text-white px-4 h-10 rounded-lg font-medium text-[14px] shadow-sm"

@@ -18,7 +18,10 @@ import Products from "./pages/Products";
 import Contact from "./pages/administration/Contact";
 import Users from "./pages/administration/Users";
 import RolesPermissions from "./pages/administration/RolesPermissions";
-
+//marketing
+import MarketingDashboard from "./pages/marketing/MarketingDashboard";
+import CampaignsList from "./pages/marketing/CampaignsList";
+import WhatsAppCampaign from "./pages/marketing/WhatsAppCampaign";
 
 function App() {
 
@@ -54,7 +57,9 @@ function App() {
           <Route path="contact" element={<Contact />} />
            <Route path="users" element={<Users />} />
           <Route path="roles" element={<RolesPermissions />} />
-           
+           <Route path="marketing-dashboard" element={<MarketingDashboard />} />
+<Route path="campaigns" element={<CampaignsList />} />
+<Route path="whatsapp-campaign" element={<WhatsAppCampaign />} />
           <Route path="settings" element={<Settings />} />
 
         </Route>

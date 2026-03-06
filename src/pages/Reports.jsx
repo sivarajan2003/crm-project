@@ -4,7 +4,7 @@ import {
 } from "recharts";
 import { Target, DollarSign, TrendingUp, Users } from "lucide-react";
 import { motion } from "framer-motion";
-
+import { Typography } from "antd";
 const revenueData = [
   { name: "Jan", revenue: 45000 },
   { name: "Feb", revenue: 52000 },
@@ -24,7 +24,7 @@ const dealData = [
 ];
 
 export default function Reports() {
-  // Dutch Animated Layout mapping
+  
   const cardAnimation = {
     hidden: { opacity: 0, y: 30 },
     visible: (i) => ({
@@ -32,6 +32,7 @@ export default function Reports() {
       transition: { delay: i * 0.1, duration: 0.5, ease: "easeOut" }
     })
   };
+const { Title, Text } = Typography;
 
   const layoutAnimation = {
     hidden: { opacity: 0, y: 20 },
@@ -44,15 +45,17 @@ export default function Reports() {
     <div className="p-4 md:p-6 bg-[#f8fafc] min-h-screen" style={fontInter}>
 
       {/* ================= HEADER ================= */}
-      <div className="mb-6">
-        <h1 className="text-[26px] tracking-[-0.5px] font-bold text-[#111827] leading-tight">
-          Reports & Analytics
-        </h1>
-        <p className="text-[14px] text-[#6b7280] mt-1">
-          Track your sales performance and metrics
-        </p>
-      </div>
+      
+<div>
+  <Title level={2} style={{ margin: 0 }}>
+   Reports & Analytics
+  </Title>
 
+  <Text type="secondary">
+               Track your sales performance and metrics
+
+  </Text>
+</div>
       {/* ================= KPI CARDS (Animated) ================= */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6">
         {[

@@ -4,7 +4,7 @@ import { useState } from "react";
 import AddLeads from "../components/AddLeads";
 
 const { Option } = Select;
-const { Text } = Typography;
+const { Title, Text } = Typography;
 
 export default function Product() {
   const { useBreakpoint } = Grid;
@@ -115,16 +115,16 @@ export default function Product() {
   return (
     <div style={styles.page}>
       {/* HEADER Matching Dutch layout */}
-      <Row justify="space-between" align="middle" style={{ marginBottom: 24, flexWrap: "wrap", gap: 16 }}>
-        <Col>
-          <div style={{ fontSize: 26, fontWeight: 700, color: "#111827", letterSpacing: "-0.5px", fontFamily: '"Inter", sans-serif' }}>
-            Leads Management
-          </div>
-          <div style={{ fontSize: 14, color: "#6b7280", marginTop: 4, fontWeight: 400, fontFamily: '"Inter", sans-serif' }}>
-            Track and manage all leads
-          </div>
-        </Col>
+      <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+  <Col>
+    <Title level={2} style={{ margin: 0 }}>
+      Leads Management
+    </Title>
 
+    <Text type="secondary">
+      Track and manage all leads
+    </Text>
+  </Col>
         <Col>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <Button

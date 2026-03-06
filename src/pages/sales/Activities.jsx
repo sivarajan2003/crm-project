@@ -21,9 +21,9 @@ import {
 } from "@ant-design/icons";
 import { useState } from "react";
 import { motion } from "framer-motion";
-
+import { Typography } from "antd";
 const { Option } = Select;
-
+const { Title, Text } = Typography;
 export default function Activities() {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
@@ -105,16 +105,17 @@ export default function Activities() {
     <div style={styles.page}>
 
       {/* ================= HEADER ================= */}
-      <Row justify="space-between" align="middle" style={{ marginBottom: 24, flexWrap: "wrap", gap: 16 }}>
-        <Col>
-          <div style={{ fontSize: 26, fontWeight: 700, color: "#111827", letterSpacing: "-0.5px", fontFamily: '"Inter", sans-serif' }}>
-            Activities
-          </div>
-          <div style={{ fontSize: 14, color: "#6b7280", marginTop: 4, fontWeight: 400, fontFamily: '"Inter", sans-serif' }}>
-            Track and manage your daily tasks and meetings
-          </div>
-        </Col>
+      
+<Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+  <Col>
+    <Title level={2} style={{ margin: 0 }}>
+       Activities
+    </Title>
 
+    <Text type="secondary">
+     Track and manage your daily tasks and meetings
+    </Text>
+  </Col>
         <Col>
           <Button
             type="primary"

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Search, Plus, Package } from "lucide-react";
 import AddProductModal from "../components/AddProductModal";
 import { motion } from "framer-motion";
-
+import { Typography } from "antd";
 const productData = [
   { id: 1, name: "CRM Enterprise License", category: "Software", price: "₹25,000", stock: 120 },
   { id: 2, name: "Cloud Migration Service", category: "Service", price: "₹45,000", stock: 50 },
@@ -16,8 +16,7 @@ export default function Product() {
   const [products, setProducts] = useState(productData);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
-
-  const filteredProducts = products.filter((p) =>
+import { Typography } from "antd";  const filteredProducts = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -45,15 +44,16 @@ export default function Product() {
 
       {/* ================= HEADER ================= */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
-        <div>
-          <h1 className="text-[26px] tracking-[-0.5px] font-bold text-[#111827] leading-tight">
-            Products
-          </h1>
-          <p className="text-[14px] text-[#6b7280] mt-1">
-            Manage your CRM products and services
-          </p>
-        </div>
+       
+<div>
+  <Title level={2} style={{ margin: 0 }}>
+   Products
+  </Title>
 
+  <Text type="secondary">
+     Manage your CRM products and services
+  </Text>
+</div>
         <button
           onClick={() => setShowModal(true)}
           className="flex items-center gap-2 bg-[#1677ff] hover:bg-[#0958d9] transition-colors text-white px-4 h-10 rounded-[8px] font-medium text-[14px] shadow-sm"

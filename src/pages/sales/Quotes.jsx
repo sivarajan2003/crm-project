@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import CreateQuoteModal from "../../components/CreateQuoteModal";
 import { motion } from "framer-motion";
+import { Typography } from "antd";
 
 const quotesData = [
   { id: "QT-2026-001", customer: "Acme Corp", contact: "Sarah Johnson", amount: 45000, status: "Sent", date: "20/03/2026", items: 12 },
@@ -23,7 +24,8 @@ export default function Quotes() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const rowsPerPage = 10;
-  
+  const { Title, Text } = Typography;
+
   const [selectedQuote, setSelectedQuote] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -91,10 +93,16 @@ export default function Quotes() {
       
       {/* ================= HEADER ================= */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
-        <div>
-          <h1 className="text-[26px] tracking-[-0.5px] font-bold text-[#111827]">Quotes Management</h1>
-          <p className="text-[14px] text-[#6b7280] mt-1">Create and manage sales quotations</p>
-        </div>
+        
+<div>
+  <Title level={2} style={{ margin: 0 }}>
+   Quotes Management
+  </Title>
+
+  <Text type="secondary">
+     Create and manage sales quotations
+  </Text>
+</div>
 
         <button
           onClick={() => setShowModal(true)}

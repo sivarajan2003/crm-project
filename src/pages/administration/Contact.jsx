@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Search, Plus, Mail, Phone, Building2, Filter } from "lucide-react";
 import AddContactModal from "../../components/AddContactModal";
 import { motion } from "framer-motion";
+import { Typography } from "antd";
 
 const contactsData = [
   { id: 1, name: "Rahul Sharma", email: "rahul@tcs.com", phone: "+91 9876543210", company: "TCS", role: "CEO", status: "Active" },
@@ -20,7 +21,7 @@ export default function Contact() {
   const [contacts, setContacts] = useState(contactsData);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
-
+const { Title, Text } = Typography;
   const [showFilter, setShowFilter] = useState(false);
   const [roleFilter, setRoleFilter] = useState("All");
 
@@ -48,7 +49,7 @@ export default function Contact() {
   const currentContacts = filteredContacts.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(filteredContacts.length / contactsPerPage);
 
-  // Dutch Animated Layout mapping
+
   const layoutAnimation = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut", delay: 0.1 } }
@@ -61,14 +62,16 @@ export default function Contact() {
 
       {/* ================= HEADER ================= */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+       
         <div>
-          <h1 className="text-[26px] tracking-[-0.5px] font-bold text-[#111827] leading-tight">
-            Contacts Directory
-          </h1>
-          <p className="text-[14px] text-[#6b7280] mt-1">
-            Manage your customer relationships
-          </p>
-        </div>
+  <Title level={2} style={{ margin: 0 }}>
+   Contacts Directory
+  </Title>
+
+  <Text type="secondary">
+     Manage your customer relationships
+  </Text>
+</div>
 
         <button
           onClick={() => setShowModal(true)}
