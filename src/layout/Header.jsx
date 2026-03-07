@@ -8,16 +8,20 @@ import {
   SettingOutlined
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import authService from "../services/authService";
 
 const { Header } = Layout;
 const { Option } = Select;
 
 export default function AppHeader({ collapsed, setCollapsed }) {
   const navigate = useNavigate();
+  const currentUser = authService.getCurrentUser();
   
   const handleLogout = () => {
-    localStorage.removeItem("auth");
-    window.location.href = "/";
+    // Remove all auth data from localStorage
+    authService.logout();
+    // Redirect to login page
+    navigate("/login");
   };
 
   return (
@@ -108,7 +112,7 @@ export default function AppHeader({ collapsed, setCollapsed }) {
               <UserOutlined style={{ fontSize: 18 }} />
             </div>
             <span className="text-sm font-medium hidden sm:block" style={{ color: "#000" }}>
-              Admin
+              {currentUser?.name || "User"}
             </span>
             <DownOutlined style={{ fontSize: 10, color: "#9CA3AF" }} />
           </div>
