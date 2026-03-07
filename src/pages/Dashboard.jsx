@@ -510,30 +510,35 @@ const iconAnimation = {
             styles={{ header: { borderBottom: "1px solid #f0f0f0", padding: "16px 24px" }, body: { display: 'flex', flexDirection: 'column', justifyContent: 'center'} }}
           >
             <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                flexDirection: screens.xs ? "column" : "row",
-                gap: 40,
-                justifyContent: "center",
-                padding: "20px 0"
-              }}
-            >
+  style={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: screens.xs ? "column" : "row",
+    gap: 60,
+    padding: "10px 0"
+  }}
+>
               {/* Donut Chart */}
-              <Progress
-                type="circle"
-                percent={45}
-                strokeWidth={10}
-                strokeColor={{
-                  "0%": "#3b82f6",
-                  "100%": "#6366f1",
-                }}
-                format={() => ""}
-                size={180}
-              />
-
+             <Progress
+  type="circle"
+  percent={45}
+  strokeWidth={12}
+  trailColor="#e5e7eb"
+  strokeColor="#3b82f6"
+  format={() => ""}
+  size={160}
+/>
               {/* Legend */}
-              <div style={{ lineHeight: "30px", fontSize: 14 }}>
+              <div
+  style={{
+    display: "flex",
+    flexDirection: "column",
+    gap: 12,
+    fontSize: 14,
+    justifyContent: "center"
+  }}
+> 
                 <div><span style={{ color: "#3b82f6", marginRight: 8, fontSize: 18 }}>●</span> Website (45%)</div>
                 <div><span style={{ color: "#ec4899", marginRight: 8, fontSize: 18 }}>●</span> Social Media (30%)</div>
                 <div><span style={{ color: "#6366f1", marginRight: 8, fontSize: 18 }}>●</span> Referral (15%)</div>

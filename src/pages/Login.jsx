@@ -1,180 +1,218 @@
 import { useState } from "react";
-import { Mail, Eye,  Lock } from "lucide-react";
-import { Briefcase } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { authService } from "../services";
+import { motion } from "framer-motion";
+import { Mail, Eye, Briefcase } from "lucide-react";
+//import { authService } from "../services";
+
+/* ---------------- Floating Background Cards ---------------- */
+
+const BackgroundCard = ({ index = 1 }) => {
+  const isEven = index % 2 === 0;
+  const price = 1000 + (index * 153) % 4000;
+  const orderId = 1000 + (index * 79) % 9000;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 0.6, y: 0 }}
+      transition={{ delay: (index % 5) * 0.1, duration: 0.8 }}
+      className="bg-white rounded-xl shadow-sm border border-gray-200/60 p-4"
+    >
+      <div className="flex justify-between">
+        <div>
+          <div className="font-semibold text-gray-700 text-sm">
+            Order #{orderId}
+          </div>
+          <div className="text-xs text-gray-400">Fixed Display</div>
+        </div>
+        <span className="text-xs font-bold text-gray-700">₹{price}</span>
+      </div>
+
+      <span
+        className={`text-[10px] px-2 py-1 rounded-full font-medium ${
+          isEven
+            ? "bg-emerald-50 text-emerald-600"
+            : "bg-amber-50 text-amber-600"
+        }`}
+      >
+        {isEven ? "Delivered" : "In Progress"}
+      </span>
+    </motion.div>
+  );
+};
+
+const FloatingColumn = ({ speed = 20, children, className }) => (
+  <motion.div
+    animate={{ y: [0, "-50%"] }}
+    transition={{ duration: speed, ease: "linear", repeat: Infinity }}
+    className={className}
+  >
+    {children}
+    {children}
+  </motion.div>
+);
+
+/* ---------------- Login Component ---------------- */
 
 export default function Login() {
   const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async () => {
-    setError("");
-    setLoading(true);
+  // const handleLogin = async () => {
+  //   setError("");
+  //   setLoading(true);
 
-    try {
-      const response = await authService.login(email, password);
-      
-      if (response.success) {
-        navigate("/");
-      } else {
-        setError(response.message || "Invalid Email or Password");
-      }
-    } catch (err) {
-      setError(err.message || "Login failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //   try {
+  //     const response = await authService.login(email, password);
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleLogin();
+  //     if (response.success) {
+  //       navigate("/");
+  //     } else {
+  //       setError(response.message || "Invalid Email or Password");
+  //     }
+  //   } catch (err) {
+  //     setError(err.message || "Login failed");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+const handleLogin = () => {
+  setError("");
+  setLoading(true);
+
+  setTimeout(() => {
+    if (email === "admin@gmail.com" && password === "12345678") {
+
+      localStorage.setItem("auth", "true");
+
+      navigate("/dashboard");
+
+    } else {
+      setError("Invalid Email or Password");
     }
-  };
+
+    setLoading(false);
+  }, 500);
+};
   return (
-    <div className="login-wrapper relative min-h-screen flex items-center justify-center bg-[#f1f5f9] overflow-hidden">
+    <div className="min-h-screen bg-gray-200 flex items-center justify-center relative overflow-hidden p-4">
 
-{/* Animated CRM SVG Background */}
-<svg
-  className="absolute inset-0 w-full h-full"
-  viewBox="0 0 1200 800"
-  xmlns="http://www.w3.org/2000/svg"
->
+      {/* Floating Animated Background */}
+      <div className="absolute inset-0 flex gap-6 justify-center opacity-30 pointer-events-none -skew-y-6 scale-110">
 
-  {/* Floating circles */}
-  <circle cx="200" cy="200" r="120" fill="#3b82f6" opacity="0.1">
-    <animate attributeName="cy" values="200;230;200" dur="8s" repeatCount="indefinite"/>
-  </circle>
+        <FloatingColumn speed={40} className="flex flex-col gap-6 w-64">
+          {[1,2,3,4,5].map(i => <BackgroundCard key={i} index={i} />)}
+        </FloatingColumn>
 
-  <circle cx="950" cy="150" r="160" fill="#6366f1" opacity="0.08">
-    <animate attributeName="cy" values="150;180;150" dur="10s" repeatCount="indefinite"/>
-  </circle>
+        <FloatingColumn speed={55} className="flex flex-col gap-6 w-64 pt-20">
+          {[6,7,8,9,10].map(i => <BackgroundCard key={i} index={i} />)}
+        </FloatingColumn>
 
-  <circle cx="1050" cy="650" r="200" fill="#8b5cf6" opacity="0.08">
-    <animate attributeName="cy" values="650;680;650" dur="12s" repeatCount="indefinite"/>
-  </circle>
+        <FloatingColumn speed={45} className="flex flex-col gap-6 w-64 hidden md:flex">
+          {[11,12,13,14,15].map(i => <BackgroundCard key={i} index={i} />)}
+        </FloatingColumn>
 
-  {/* CRM dashboard blocks */}
-  <rect x="160" y="420" width="200" height="120" rx="16" fill="#3b82f6" opacity="0.15">
-    <animate attributeName="y" values="420;440;420" dur="9s" repeatCount="indefinite"/>
-  </rect>
+        <FloatingColumn speed={45} className="flex flex-col gap-6 w-64 hidden md:flex">
+          {[16,17,18,19,20].map(i => <BackgroundCard key={i} index={i} />)}
+        </FloatingColumn>
 
-  <rect x="480" y="320" width="220" height="140" rx="16" fill="#6366f1" opacity="0.15">
-    <animate attributeName="y" values="320;350;320" dur="7s" repeatCount="indefinite"/>
-  </rect>
+      </div>
 
-  <rect x="780" y="440" width="200" height="120" rx="16" fill="#8b5cf6" opacity="0.15">
-    <animate attributeName="y" values="440;470;440" dur="11s" repeatCount="indefinite"/>
-  </rect>
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-gray-50 via-gray-50/90 to-transparent pointer-events-none" />
 
-  {/* connecting CRM lines */}
-  <line x1="260" y1="420" x2="590" y2="320" stroke="#c7d2fe" strokeWidth="2">
-    <animate attributeName="opacity" values="0.3;1;0.3" dur="6s" repeatCount="indefinite"/>
-  </line>
+      {/* Login Card */}
+<div className="max-w-lg w-full bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-12 border border-white/40 relative z-10">
+        {/* Logo */}
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-100">
+            <Briefcase size={28} color="#2563eb"/>
+          </div>
 
-  <line x1="700" y1="380" x2="880" y2="440" stroke="#c7d2fe" strokeWidth="2">
-    <animate attributeName="opacity" values="0.3;1;0.3" dur="6s" repeatCount="indefinite"/>
-  </line>
+          <h1 className="text-2xl font-bold text-gray-800">
+            Welcome Back
+          </h1>
 
-</svg>
+          <p className="text-gray-500 text-sm">
+            Sign in to your account
+          </p>
+        </div>
 
-{/* LOGIN CARD */}
-<div className="login-card relative z-10">
+        {/* Error */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-100 text-red-600 text-sm rounded-lg">
+            {error}
+          </div>
+        )}
 
-        {/* LOGO 
-        <div className="logo-box">
-          <img src="/logo.png" width="28" />
-        </div>*/}
-        {/* LOGIN ICON */}
+        {/* Email */}
+        <div className="mb-5">
+          <label className="text-sm text-gray-600 mb-2 block">
+            Email
+          </label>
 
-
-<div className="login-icon">
-  <Briefcase size={28} color="#ffffff" />
-</div>
-
-        <h2 className="login-title">Welcome Back</h2>
-        <p className="login-sub">Sign in to your account</p>
-
-        {/* EMAIL */}
-        <div className="form-group">
-          <label>Email</label>
-
-          <div className="input-box">
+          <div className="relative">
             <input
               type="email"
               placeholder="admin@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              onKeyPress={handleKeyPress}
-              disabled={loading}
+              className="w-full pl-4 pr-12 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
-            <Mail size={18} color="#9ca3af"/>
+
+            <Mail className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" size={18}/>
           </div>
         </div>
 
-        {/* PASSWORD */}
-        <div className="form-group">
-          <label>Password</label>
+        {/* Password */}
+        <div className="mb-6">
+          <label className="text-sm text-gray-600 mb-2 block">
+            Password
+          </label>
 
-          <div className="input-box">
+          <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
+              placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              onKeyPress={handleKeyPress}
-              disabled={loading}
+              className="w-full pl-4 pr-12 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
+
             <Eye
               size={18}
-              color="#9ca3af"
-              style={{ cursor: "pointer" }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}
             />
           </div>
         </div>
 
-        {/* ERROR MESSAGE */}
-        {error && (
-          <div style={{
-            padding: '10px',
-            backgroundColor: '#fee2e2',
-            color: '#dc2626',
-            borderRadius: '6px',
-            fontSize: '14px',
-            marginBottom: '16px'
-          }}>
-            {error}
-          </div>
-        )}
-
-        {/* BUTTON */}
-        <button 
-          className="login-btn" 
+        {/* Button */}
+        <button
           onClick={handleLogin}
           disabled={loading}
-          style={{ opacity: loading ? 0.7 : 1 }}
+          className="w-full py-3 text-lg font-semibold rounded-xl text-white bg-gradient-to-r from-blue-500 to-indigo-600 shadow-lg shadow-blue-300/40 hover:scale-[1.02] active:scale-[0.98] transition-all"
         >
-          {loading ? 'Signing In...' : 'Sign In'}
+          {loading ? "Signing In..." : "Sign In"}
         </button>
 
-        <div className="divider"></div>
+        {/* Footer */}
+        <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+          <p className="text-xs text-gray-400">
+            Application Developed and maintained by
+          </p>
 
-        <p className="footer-text">
-          Application Developed and maintained by
-        </p>
-
-        <p className="company-name">
-          Atelier Technology Solutions
-        </p>
+          <p className="text-sm font-medium text-gray-600 mt-1">
+            Atelier Technology Solutions
+          </p>
+        </div>
 
       </div>
-
     </div>
   );
 }
