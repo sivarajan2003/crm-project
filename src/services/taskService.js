@@ -2,18 +2,18 @@ import apiCall from './api';
 
 const taskService = {
   // Get all tasks
-  getAllTasks: async (filters = {}) => {
+  getAll: async (filters = {}) => {
     const queryParams = new URLSearchParams(filters).toString();
     return await apiCall(`/tasks${queryParams ? `?${queryParams}` : ''}`);
   },
 
   // Get task by ID
-  getTaskById: async (id) => {
+  getById: async (id) => {
     return await apiCall(`/tasks/${id}`);
   },
 
   // Create task
-  createTask: async (taskData) => {
+  create: async (taskData) => {
     return await apiCall('/tasks', {
       method: 'POST',
       body: JSON.stringify(taskData),
@@ -21,7 +21,7 @@ const taskService = {
   },
 
   // Update task
-  updateTask: async (id, taskData) => {
+  update: async (id, taskData) => {
     return await apiCall(`/tasks/${id}`, {
       method: 'PUT',
       body: JSON.stringify(taskData),
@@ -29,7 +29,7 @@ const taskService = {
   },
 
   // Delete task
-  deleteTask: async (id) => {
+  delete: async (id) => {
     return await apiCall(`/tasks/${id}`, {
       method: 'DELETE',
     });

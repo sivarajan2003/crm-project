@@ -1,108 +1,121 @@
-import { Card, Row, Col, Button, Table, Avatar, Progress, Typography, Grid } from "antd";
-import {
-  UserOutlined,
-  DollarOutlined,
-  PhoneOutlined,
-  RiseOutlined,
-  RightOutlined
-} from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+//import { Card, Row, Col, Table, Tag, Spin, message } from "antd";
+import { UserOutlined, ShoppingOutlined, DollarOutlined, RiseOutlined } from "@ant-design/icons";
+import { dashboardService } from "../services";
 import { motion } from "framer-motion";
-import callIcon from "../assets/icons/d1.gif";
-import leadIcon from "../assets/icons/d2.gif";
-import revenueIcon from "../assets/icons/d3.gif";
-import conversionIcon from "../assets/icons/d4.gif";
-const { Title, Text } = Typography;
-
+import { Card, Row, Col, Table, Tag, Spin, message, Avatar, Progress, Typography } from "antd";
+//import { RightOutlined } from "@ant-design/icons";
+const { Text } = Typography;
 export default function Dashboard() {
-  const navigate = useNavigate();
-  const { useBreakpoint } = Grid;
-  const screens = useBreakpoint();
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    fetchDashboardStats();
+  }, []);
 
-  const styles = {
-    page: { padding: "8px 24px", minHeight: "100vh", width: "100%", background: "#f8fafc" },
-    roundedCard: { borderRadius: 14, boxShadow: "0 6px 18px rgba(15,23,42,0.06)", border: "none" },
-    statGridCardWrap: {
-      borderRadius: 14, overflow: "hidden", minHeight: 96,
-      boxShadow: "0 10px 30px rgba(2,6,23,0.06)",
-      cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s",
-      color: "#fff"
-    },
-    statInner: { padding: 18, display: "flex", justifyContent: "space-between", alignItems: "center", color: "#fff" },
-    statLeft: { display: "flex", flexDirection: "column", gap: 6 },
-    statTitle: { fontSize: 13, fontWeight: 700, opacity: 0.95 },
-    statValue: { fontSize: 28, fontWeight: 900, lineHeight: 1 },
-    statMeta: { fontSize: 12, opacity: 0.95 },
-statIconCircle: {
-  width: 40,
-  height: 40,
-  borderRadius: 10,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  background: "#ffffff",
-boxShadow: "0 4px 10px rgba(0,0,0,0.1)"
-},    statChevron: { width: 44, height: 44, borderRadius: 10, background: "rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "center" },
+  const fetchDashboardStats = async () => {
+    setLoading(true);
+    try {
+      const response = await dashboardService.getStats();
+      if (response.success) {
+        setStats(response.data);
+      }
+    } catch (error) {
+      message.error('Failed to load dashboard statistics');
+    } finally {
+      setLoading(false);
+    }
   };
-const cardAnimation = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut"
-    }
-  }
-};
 
-const hoverEffect = {
-  whileHover: { scale: 1.03 },
-  whileTap: { scale: 0.97 }
-};
   const columns = [
-    { title: "Lead Name", dataIndex: "name", render: (text) => <Text strong>{text}</Text> },
-    { title: "Company", dataIndex: "company", render: (text) => <Text type="secondary">{text}</Text> },
-    { title: "Stage", dataIndex: "stage" },
-    { title: "Value", dataIndex: "value", align: "right", render: (val) => <Text strong style={{ color: "#10b981" }}>{val}</Text> },
+    {
+      title: "Deal Name",
+      dataIndex: "deal_name",
+      key: "deal_name",
+      render: (text) => <span style={{ fontWeight: 600 }}>{text}</span>
+    },
+    {
+      title: "Customer",
+      key: "customer",
+      render: (_, record) => record.customer?.name || 'N/A'
+    },
+    {
+      title: "Value",
+      dataIndex: "value",
+      key: "value",
+      render: (value) => `₹${(value || 0).toLocaleString('en-IN')}`
+    },
+    {
+      title: "Stage",
+      dataIndex: "stage",
+      key: "stage",
+      render: (stage) => {
+        const colors = {
+          'Lead': 'blue',
+          'Qualified': 'cyan',
+          'Proposal': 'orange',
+          'Negotiation': 'purple',
+          'Won': 'green',
+          'Lost': 'red'
+        };
+        return <Tag color={colors[stage] || 'default'}>{stage}</Tag>;
+      }
+    },
+    {
+      title: "Assigned To",
+      key: "assignedTo",
+      render: (_, record) => record.assignedTo?.name || 'Unassigned'
+    }
   ];
 
-  const data = [
-    { key: 1, name: "John Doe", company: "ABC Pvt Ltd", stage: "Proposal", value: "₹45,000" },
-    { key: 2, name: "Priya Sharma", company: "Tech Solutions", stage: "Negotiation", value: "₹78,000" },
-    { key: 3, name: "Rahul Kumar", company: "Global CRM", stage: "New Lead", value: "₹25,000" },
-  ];
-const iconAnimation = {
-  animate: {
-    scale: [1, 1.2, 1],
-    rotate: [0, 10, -10, 0],
-    transition: {
-      duration: 2,
-      repeat: Infinity
-    }
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+        <Spin size="large" />
+      </div>
+    );
   }
-};
+
+  if (!stats) {
+    return (
+      <div style={{ padding: 24 }}>
+        <p>Failed to load dashboard data</p>
+      </div>
+    );
+  }
+
+  const cardData = [
+    {
+      title: "Total Customers",
+      value: stats.overview?.totalCustomers || 0,
+      icon: <UserOutlined style={{ fontSize: 24, color: "#1890ff" }} />,
+      color: "#1890ff"
+    },
+    {
+      title: "Total Leads",
+      value: stats.overview?.totalLeads || 0,
+      icon: <ShoppingOutlined style={{ fontSize: 24, color: "#52c41a" }} />,
+      color: "#52c41a"
+    },
+    {
+      title: "Total Deals",
+      value: stats.overview?.totalDeals || 0,
+      icon: <RiseOutlined style={{ fontSize: 24, color: "#faad14" }} />,
+      color: "#faad14"
+    },
+    {
+      title: "Total Revenue",
+      value: `₹${(stats.revenue?.totalRevenue || 0).toLocaleString('en-IN')}`,
+      icon: <DollarOutlined style={{ fontSize: 24, color: "#f5222d" }} />,
+      color: "#f5222d"
+    }
+  ];
+
   return (
-    <div style={styles.page}>
-      {/* HEADER */}
-      <Row justify="space-between" align="middle" style={{ marginBottom: 20 }}>
-        <Col>
-          <Title level={4} style={{ margin: 0, fontWeight: 700 }}>
-            CRM Dashboard
-          </Title>
-          <Text type="secondary">Overview & Performance</Text>
-        </Col>
-        <Col style={{ marginTop: screens.xs ? 10 : 0 }}>
-          <Button
-  type="primary"
-  style={{ borderRadius: 6, fontWeight: 500 }}
-  onClick={() => navigate("/product")}
->
-  + Add Lead
-</Button>
-        </Col>
-      </Row>
+    <div style={{ padding: 24, background: "#f0f2f5", minHeight: "100vh" }}>
+      <h1 style={{ fontSize: 24, fontWeight: "bold", marginBottom: 24 }}>Dashboard</h1>
+
 
       {/* KPI CARDS */}
       <Row gutter={[16, 16]}>
@@ -543,12 +556,96 @@ const iconAnimation = {
                 <div><span style={{ color: "#ec4899", marginRight: 8, fontSize: 18 }}>●</span> Social Media (30%)</div>
                 <div><span style={{ color: "#6366f1", marginRight: 8, fontSize: 18 }}>●</span> Referral (15%)</div>
                 <div><span style={{ color: "#f59e0b", marginRight: 8, fontSize: 18 }}>●</span> Email Campaign (10%)</div>
-              </div>
-            </div>
-          </Card>
-       </motion.div>
+</div>
+</div>
+</Card>
+</motion.div>
 </Col>
+</Row>
+      {/* Stats Cards */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        {cardData.map((card, index) => (
+          <Col xs={24} sm={12} lg={6} key={index}>
+            <Card
+              style={{
+                borderRadius: 8,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                borderLeft: `4px solid ${card.color}`
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <p style={{ margin: 0, color: "#8c8c8c", fontSize: 14 }}>{card.title}</p>
+                  <h2 style={{ margin: "8px 0 0 0", fontSize: 28, fontWeight: "bold" }}>
+                    {card.value}
+                  </h2>
+                </div>
+                <div style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: "50%",
+                  background: `${card.color}15`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}>
+                  {card.icon}
+                </div>
+
+              </div>
+            </Card>
+          </Col>
+        ))}
       </Row>
+
+      {/* Additional Stats Row */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card style={{ borderRadius: 8, boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
+            <p style={{ margin: 0, color: "#8c8c8c", fontSize: 14 }}>Pending Tasks</p>
+            <h2 style={{ margin: "8px 0 0 0", fontSize: 28, fontWeight: "bold", color: "#faad14" }}>
+              {stats.tasks?.pending || 0}
+            </h2>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card style={{ borderRadius: 8, boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
+            <p style={{ margin: 0, color: "#8c8c8c", fontSize: 14 }}>Open Tickets</p>
+            <h2 style={{ margin: "8px 0 0 0", fontSize: 28, fontWeight: "bold", color: "#f5222d" }}>
+              {stats.breakdown?.ticketsByStatus?.find(t => t.status === 'Open')?.count || 0}
+            </h2>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card style={{ borderRadius: 8, boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
+            <p style={{ margin: 0, color: "#8c8c8c", fontSize: 14 }}>Total Invoices</p>
+            <h2 style={{ margin: "8px 0 0 0", fontSize: 28, fontWeight: "bold", color: "#722ed1" }}>
+              {stats.overview?.totalInvoices || 0}
+            </h2>
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card style={{ borderRadius: 8, boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
+            <p style={{ margin: 0, color: "#8c8c8c", fontSize: 14 }}>Conversion Rate</p>
+            <h2 style={{ margin: "8px 0 0 0", fontSize: 28, fontWeight: "bold", color: "#52c41a" }}>
+              {stats.deals?.conversionRate || 0}%
+            </h2>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Recent Deals Table */}
+      <Card
+        title="Recent Deals"
+        style={{ borderRadius: 8, boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}
+      >
+        <Table
+          dataSource={stats.recent?.deals || []}
+          columns={columns}
+          rowKey="id"
+          pagination={{ pageSize: 10 }}
+        />
+      </Card>
     </div>
   );
 }

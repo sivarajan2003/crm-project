@@ -2,18 +2,18 @@ import apiCall from './api';
 
 const ticketService = {
   // Get all tickets
-  getAllTickets: async (filters = {}) => {
+  getAll: async (filters = {}) => {
     const queryParams = new URLSearchParams(filters).toString();
     return await apiCall(`/tickets${queryParams ? `?${queryParams}` : ''}`);
   },
 
   // Get ticket by ID
-  getTicketById: async (id) => {
+  getById: async (id) => {
     return await apiCall(`/tickets/${id}`);
   },
 
   // Create ticket
-  createTicket: async (ticketData) => {
+  create: async (ticketData) => {
     return await apiCall('/tickets', {
       method: 'POST',
       body: JSON.stringify(ticketData),
@@ -21,7 +21,7 @@ const ticketService = {
   },
 
   // Update ticket
-  updateTicket: async (id, ticketData) => {
+  update: async (id, ticketData) => {
     return await apiCall(`/tickets/${id}`, {
       method: 'PUT',
       body: JSON.stringify(ticketData),
@@ -29,7 +29,7 @@ const ticketService = {
   },
 
   // Delete ticket
-  deleteTicket: async (id) => {
+  delete: async (id) => {
     return await apiCall(`/tickets/${id}`, {
       method: 'DELETE',
     });

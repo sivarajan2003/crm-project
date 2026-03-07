@@ -1,14 +1,94 @@
-import { useState } from "react";
-import { Card, Row, Col, Table, Input, Select, Tag, Avatar, Grid, Button, Modal, Form } from "antd";
-import { SearchOutlined, UserOutlined, TeamOutlined, LaptopOutlined, DownOutlined, PlusOutlined } from "@ant-design/icons";
+import { useState, useEffect } from "react";
+import { Card, Row, Col, Table, Input, Select, Tag, Avatar, Grid, Button, Modal, Form, message, Spin, Popconfirm } from "antd";
+import { SearchOutlined, UserOutlined, TeamOutlined, LaptopOutlined, DownOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
+import { customerService } from "../services";
 const { Option } = Select;
 
 export default function Customer() {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
-const [open, setOpen] = useState(false);
-const [form] = Form.useForm();
+  const [open, setOpen] = useState(false);
+  const [form] = Form.useForm();
+  const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState(null);
+  const [searchText, setSearchText] = useState("");
+  
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
+  
+  const fetchCustomers = async () => {
+    setLoading(true);
+    try {
+      const response = await customerService.getAll();
+      if (response.success) {
+        setCustomers(response.data || []);
+      }
+    } catch (error) {
+      message.error('Failed to load customers');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleSubmit = async (values) => {
+    try {
+      const response = editingCustomer
+        ? await customerService.update(editingCustomer.id, values)
+        : await customerService.create(values);
+      
+      if (response.success) {
+        message.success(editingCustomer ? 'Customer updated successfully' : 'Customer created successfully');
+        fetchCustomers();
+        setOpen(false);
+        setEditingCustomer(null);
+        form.resetFields();
+      }
+    } catch (error) {
+      message.error('Operation failed');
+    }
+  };
+  
+  const handleEdit = (customer) => {
+    setEditingCustomer(customer);
+    form.setFieldsValue({
+      name: customer.name,
+      email: customer.email,
+      phone: customer.phone,
+      company: customer.company,
+      address: customer.address,
+      city: customer.city,
+      state: customer.state,
+      country: customer.country
+    });
+    setOpen(true);
+  };
+  
+  const handleDelete = async (id) => {
+    try {
+      const response = await customerService.delete(id);
+      if (response.success) {
+        message.success('Customer deleted successfully');
+        fetchCustomers();
+      }
+    } catch (error) {
+      message.error('Delete failed');
+    }
+  };
+  
+  const handleAddNew = () => {
+    setEditingCustomer(null);
+    form.resetFields();
+    setOpen(true);
+  };
+  
+  const filteredCustomers = customers.filter(customer =>
+    customer.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+    customer.email?.toLowerCase().includes(searchText.toLowerCase()) ||
+    customer.company?.toLowerCase().includes(searchText.toLowerCase())
+  );
   // Dutch specific styles mapping 
   const styles = {
     page: { padding: "8px 24px", minHeight: "100vh", width: "100%", background: "#f8fafc", fontFamily: '"Inter", sans-serif' },
@@ -47,71 +127,75 @@ const [form] = Form.useForm();
     {
       title: "Customer",
       dataIndex: "name",
-      render: (text) => (
+      render: (text, record) => (
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <Avatar 
              style={{ backgroundColor: "#f3f4f6", color: "#6b7280" }} 
              icon={<UserOutlined />} 
           />
-          <span style={{ fontWeight: 600, color: "#111827", fontFamily: '"Inter", sans-serif' }}>{text}</span>
+          <div>
+            <div style={{ fontWeight: 600, color: "#111827", fontFamily: '"Inter", sans-serif' }}>{text}</div>
+            <div style={{ fontSize: 12, color: "#9ca3af", fontFamily: '"Inter", sans-serif' }}>{record.customer_code}</div>
+          </div>
         </div>
       ),
     },
     { 
       title: "Company", 
       dataIndex: "company",
-      render: (text) => <span style={{ color: "#4b5563", fontFamily: '"Inter", sans-serif' }}>{text}</span> 
+      render: (text) => <span style={{ color: "#4b5563", fontFamily: '"Inter", sans-serif' }}>{text || 'N/A'}</span> 
     },
     { 
       title: "Phone", 
       dataIndex: "phone",
-      render: (text) => <span style={{ color: "#4b5563", fontFamily: '"Inter", sans-serif' }}>{text}</span>
+      render: (text) => <span style={{ color: "#4b5563", fontFamily: '"Inter", sans-serif' }}>{text || 'N/A'}</span>
     },
     { 
       title: "Email", 
       dataIndex: "email",
-      render: (text) => <span style={{ color: "#4b5563", fontFamily: '"Inter", sans-serif' }}>{text}</span> 
+      render: (text) => <span style={{ color: "#4b5563", fontFamily: '"Inter", sans-serif' }}>{text || 'N/A'}</span> 
     },
     { 
-      title: "Country", 
-      dataIndex: "country",
-      render: (text) => <span style={{ color: "#4b5563", fontFamily: '"Inter", sans-serif' }}>{text}</span> 
+      title: "City", 
+      dataIndex: "city",
+      render: (text) => <span style={{ color: "#4b5563", fontFamily: '"Inter", sans-serif' }}>{text || 'N/A'}</span> 
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      render: (status) => (
-        <Tag 
-          style={{ 
-            borderRadius: 6, 
-            padding: "4px 10px", 
-            border: "none",
-            fontWeight: 600,
-            fontSize: 12,
-            fontFamily: '"Inter", sans-serif',
-            background: status === "Active" ? "#d1fae5" : "#fee2e2",
-            color: status === "Active" ? "#059669" : "#dc2626"
-          }}
-        >
-          {status}
-        </Tag>
+      title: "Actions",
+      key: "actions",
+      render: (_, record) => (
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record)}
+          >
+            Edit
+          </Button>
+          <Popconfirm
+            title="Delete customer"
+            description="Are you sure you want to delete this customer?"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button type="link" danger icon={<DeleteOutlined />}>
+              Delete
+            </Button>
+          </Popconfirm>
+        </div>
       ),
     },
   ];
 
-  const data = [
-    { key: 1, name: "Jane Cooper", company: "Microsoft", phone: "+91 6543212345", email: "jane@microsoft.com", country: "United States", status: "Active" },
-    { key: 2, name: "Floyd Miles", company: "Yahoo", phone: "+91 8877662312", email: "floyd@yahoo.com", country: "Kiribati", status: "Inactive" },
-    { key: 3, name: "Ronald Richards", company: "Adobe", phone: "+91 9988776655", email: "ronald@adobe.com", country: "Israel", status: "Active" },
-    { key: 4, name: "Marvin McKinney", company: "Tesla", phone: "+91 7766554433", email: "marvin@tesla.com", country: "Canada", status: "Active" },
-    { key: 5, name: "Jerome Bell", company: "Google", phone: "+91 8899001122", email: "jerome@google.com", country: "United Kingdom", status: "Inactive" },
-    { key: 6, name: "Kathryn Murphy", company: "Amazon", phone: "+91 9123456780", email: "kathryn@amazon.com", country: "Australia", status: "Active" },
-    { key: 7, name: "Jacob Jones", company: "Meta", phone: "+91 9012345678", email: "jacob@meta.com", country: "Germany", status: "Active" },
-  ];
-
   return (
     <div style={styles.page}>
-      
+      {loading && !customers.length ? (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+          <Spin size="large" />
+        </div>
+      ) : (
+        <>
       {/* ================= PAGE HEADER ================= */}
       <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
   <Col>
@@ -126,7 +210,7 @@ const [form] = Form.useForm();
       type="primary"
       icon={<PlusOutlined />}
       style={{ height: 40, borderRadius: 8 }}
-      onClick={() => setOpen(true)}
+      onClick={handleAddNew}
     >
       Add Customer
     </Button>
@@ -135,9 +219,9 @@ const [form] = Form.useForm();
       {/* ================= TOP STATS (Animated, Black Text) ================= */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         {[
-          { title: "Total Customers", count: "5,423", icon: <UserOutlined />, change: "↑ 16% this month", trendColor: "#10b981", iconBg: "#e0e7ff", iconColor: "#6366f1", borderTop: "#6366f1" },
-          { title: "Members", count: "1,893", icon: <TeamOutlined />, change: "↓ 1% this month", trendColor: "#ef4444", iconBg: "#fce7f3", iconColor: "#ec4899", borderTop: "#ec4899" },
-          { title: "Active Now", count: "893", icon: <LaptopOutlined />, change: "↑ 10% this month", trendColor: "#10b981", iconBg: "#d1fae5", iconColor: "#10b981", borderTop: "#10b981" },
+          { title: "Total Customers", count: customers.length, icon: <UserOutlined />, change: "All customers", trendColor: "#10b981", iconBg: "#e0e7ff", iconColor: "#6366f1", borderTop: "#6366f1" },
+          { title: "With Email", count: customers.filter(c => c.email).length, icon: <TeamOutlined />, change: "Have email", trendColor: "#10b981", iconBg: "#fce7f3", iconColor: "#ec4899", borderTop: "#ec4899" },
+          { title: "With Phone", count: customers.filter(c => c.phone).length, icon: <LaptopOutlined />, change: "Have phone", trendColor: "#10b981", iconBg: "#d1fae5", iconColor: "#10b981", borderTop: "#10b981" },
         ].map((item, index) => (
           <Col xs={24} sm={12} lg={8} key={index}>
             <motion.div
@@ -153,7 +237,6 @@ const [form] = Form.useForm();
                   <div style={{ fontSize: 13, fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.5px", fontFamily: '"Inter", sans-serif' }}>
                     {item.title}
                   </div>
-                  {/* NUMBERS ARE NOW BLACK REQUSTED BY USER */}
                   <div style={{ fontSize: 32, fontWeight: 800, marginTop: 8, color: "#111827", lineHeight: 1, fontFamily: '"Inter", sans-serif' }}>
                     {item.count}
                   </div>
@@ -185,6 +268,8 @@ const [form] = Form.useForm();
                 placeholder="Search customer..."
                 prefix={<SearchOutlined style={{ color: "#9ca3af" }} />}
                 style={{ height: 40, borderRadius: 8, fontFamily: '"Inter", sans-serif' }}
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
               />
             </Col>
 
@@ -202,11 +287,11 @@ const [form] = Form.useForm();
         </Card>
 
         {/* Table Container */}
-        <Card bordered={false} style={{ ...styles.roundedCard, padding: 0 }}>
+        <Card variant="borderless" style={{ ...styles.roundedCard, padding: 0 }}>
           
           <div style={{ padding: "20px 24px", borderBottom: "1px solid #f0f0f0" }}>
              <span style={{ fontSize: 16, fontWeight: 600, color: "#111827", fontFamily: '"Inter", sans-serif' }}>
-               Customer Directory
+               Customer Directory ({filteredCustomers.length})
              </span>
           </div>
 
@@ -214,8 +299,10 @@ const [form] = Form.useForm();
           {!screens.xs && (
              <Table
                columns={columns}
-               dataSource={data}
-               pagination={{ pageSize: 5 }}
+               dataSource={filteredCustomers}
+               rowKey="id"
+               loading={loading}
+               pagination={{ pageSize: 10 }}
                scroll={{ x: true }}
                size="middle"
              />
@@ -224,9 +311,9 @@ const [form] = Form.useForm();
           {/* MOBILE CARD VIEW */}
           {screens.xs && (
             <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: 16 }}>
-              {data.map((item) => (
+              {filteredCustomers.map((item) => (
                 <div 
-                  key={item.key} 
+                  key={item.id} 
                   style={{
                     border: "1px solid #e5e7eb",
                     padding: 16,
@@ -240,28 +327,27 @@ const [form] = Form.useForm();
                       <Avatar style={{ backgroundColor: "#f3f4f6", color: "#6b7280" }} icon={<UserOutlined />} />
                       <div>
                         <div style={{ fontWeight: 600, fontSize: 15, color: "#111827", fontFamily: '"Inter", sans-serif' }}>{item.name}</div>
-                        <div style={{ fontSize: 13, color: "#6b7280", fontFamily: '"Inter", sans-serif' }}>{item.company}</div>
+                        <div style={{ fontSize: 13, color: "#6b7280", fontFamily: '"Inter", sans-serif' }}>{item.company || 'N/A'}</div>
                       </div>
                     </div>
-                    
-                    {/* Status Badge */}
-                    <Tag style={{ 
-                      margin: 0, borderRadius: 6, border: "none", fontWeight: 600, fontSize: 11,
-                      background: item.status === "Active" ? "#d1fae5" : "#fee2e2",
-                      color: item.status === "Active" ? "#059669" : "#dc2626"
-                    }}>
-                      {item.status}
-                    </Tag>
                   </div>
 
                   <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 6, fontSize: 13, color: "#4b5563", fontFamily: '"Inter", sans-serif' }}>
-                    <div>📞 {item.phone}</div>
-                    <div>📧 {item.email}</div>
+                    <div>📞 {item.phone || 'N/A'}</div>
+                    <div>📧 {item.email || 'N/A'}</div>
                   </div>
 
-                  <div style={{ marginTop: 12, borderTop: "1px solid #f3f4f6", paddingTop: 12, display: "flex", justifyContent: "space-between" }}>
-                    <span style={{ color: "#9ca3af", fontSize: 12, fontFamily: '"Inter", sans-serif' }}>Country:</span>
-                    <span style={{ fontWeight: 500, color: "#374151", fontSize: 13, fontFamily: '"Inter", sans-serif' }}>{item.country}</span>
+                  <div style={{ marginTop: 12, borderTop: "1px solid #f3f4f6", paddingTop: 12, display: "flex", gap: 8 }}>
+                    <Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(item)}>Edit</Button>
+                    <Popconfirm
+                      title="Delete customer"
+                      description="Are you sure?"
+                      onConfirm={() => handleDelete(item.id)}
+                      okText="Yes"
+                      cancelText="No"
+                    >
+                      <Button size="small" danger icon={<DeleteOutlined />}>Delete</Button>
+                    </Popconfirm>
                   </div>
                 </div>
               ))}
@@ -269,63 +355,73 @@ const [form] = Form.useForm();
           )}
         </Card>
       </motion.div>
+        </>
+      )}
 <Modal
-  title="Add Customer"
+  title={editingCustomer ? "Edit Customer" : "Add Customer"}
   open={open}
-  onCancel={() => setOpen(false)}
+  onCancel={() => {
+    setOpen(false);
+    setEditingCustomer(null);
+    form.resetFields();
+  }}
   footer={null}
   centered
   zIndex={2000}
 >
-    <Form form={form} layout="vertical">
+    <Form form={form} layout="vertical" onFinish={handleSubmit}>
 
-    <Form.Item label="Customer Name" name="name" rules={[{ required: true }]}>
+    <Form.Item label="Customer Name" name="name" rules={[{ required: true, message: 'Please enter customer name' }]}>
       <Input placeholder="Enter name" />
     </Form.Item>
 
-    <Form.Item label="Company" name="company">
-      <Input placeholder="Enter company" />
+    <Form.Item label="Email" name="email" rules={[{ type: 'email', message: 'Please enter valid email' }]}>
+      <Input placeholder="Enter email" />
     </Form.Item>
 
     <Form.Item label="Phone" name="phone">
       <Input placeholder="Enter phone" />
     </Form.Item>
 
-    <Form.Item label="Email" name="email">
-      <Input placeholder="Enter email" />
+    <Form.Item label="Company" name="company">
+      <Input placeholder="Enter company" />
     </Form.Item>
+
+    <Form.Item label="Address" name="address">
+      <Input.TextArea placeholder="Enter address" rows={2} />
+    </Form.Item>
+
+    <Row gutter={16}>
+      <Col span={12}>
+        <Form.Item label="City" name="city">
+          <Input placeholder="Enter city" />
+        </Form.Item>
+      </Col>
+      <Col span={12}>
+        <Form.Item label="State" name="state">
+          <Input placeholder="Enter state" />
+        </Form.Item>
+      </Col>
+    </Row>
 
     <Form.Item label="Country" name="country">
       <Input placeholder="Enter country" />
     </Form.Item>
 
-    <Form.Item label="Status" name="status">
-      <Select>
-        <Option value="Active">Active</Option>
-        <Option value="Inactive">Inactive</Option>
-      </Select>
-    </Form.Item>
-
     <Row gutter={10}>
       <Col span={12}>
-        <Button block onClick={() => setOpen(false)}>
+        <Button block onClick={() => {
+          setOpen(false);
+          setEditingCustomer(null);
+          form.resetFields();
+        }}>
           Cancel
         </Button>
       </Col>
 
       <Col span={12}>
-        <Button
-          type="primary"
-          block
-          onClick={() => {
-            form.validateFields().then(values => {
-              console.log(values);
-              setOpen(false);
-              form.resetFields();
-            });
-          }}
-        >
-          Save Customer
+        <Button type="primary" block htmlType="submit">
+          {editingCustomer ? 'Update' : 'Save'} Customer
         </Button>
       </Col>
     </Row>

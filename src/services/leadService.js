@@ -2,18 +2,18 @@ import apiCall from './api';
 
 const leadService = {
   // Get all leads
-  getAllLeads: async (filters = {}) => {
+  getAll: async (filters = {}) => {
     const queryParams = new URLSearchParams(filters).toString();
     return await apiCall(`/leads${queryParams ? `?${queryParams}` : ''}`);
   },
 
   // Get lead by ID
-  getLeadById: async (id) => {
+  getById: async (id) => {
     return await apiCall(`/leads/${id}`);
   },
 
   // Create lead
-  createLead: async (leadData) => {
+  create: async (leadData) => {
     return await apiCall('/leads', {
       method: 'POST',
       body: JSON.stringify(leadData),
@@ -21,7 +21,7 @@ const leadService = {
   },
 
   // Update lead
-  updateLead: async (id, leadData) => {
+  update: async (id, leadData) => {
     return await apiCall(`/leads/${id}`, {
       method: 'PUT',
       body: JSON.stringify(leadData),
@@ -29,7 +29,7 @@ const leadService = {
   },
 
   // Delete lead
-  deleteLead: async (id) => {
+  delete: async (id) => {
     return await apiCall(`/leads/${id}`, {
       method: 'DELETE',
     });

@@ -3,9 +3,9 @@ import MainLayout from "./layout/MainLayout";
 import Login from "./pages/Login";
 
 import Dashboard from "./pages/Dashboard";
-import Product from "./pages/Product";
 import Reports from "./pages/Reports";
 import Customer from "./pages/Customer";
+import Leads from "./pages/Leads";
 import Opportunities from "./pages/sales/Opportunities";
 import Quotes from "./pages/sales/Quotes";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -18,6 +18,10 @@ import Products from "./pages/Products";
 import Contact from "./pages/administration/Contact";
 import Users from "./pages/administration/Users";
 import RolesPermissions from "./pages/administration/RolesPermissions";
+import Tasks from "./pages/Tasks";
+import Payments from "./pages/Payments";
+import Tickets from "./pages/Tickets";
+import Notes from "./pages/Notes";
 //marketing
 import MarketingDashboard from "./pages/marketing/MarketingDashboard";
 import CampaignsList from "./pages/marketing/CampaignsList";
@@ -46,7 +50,7 @@ function App() {
   <Route index element={<Navigate to="dashboard" />} />
 
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="product" element={<Product />} />
+          <Route path="leads" element={<Leads />} />
           <Route path="customer" element={<Customer />} />
           <Route path="reports" element={<Reports />} />
           <Route path="opportunities" element={<Opportunities />} />
@@ -54,13 +58,17 @@ function App() {
           <Route path="quotes" element={<Quotes />} />
           <Route path="invoices" element={<Invoices />} />
           <Route path="deals" element={<Deals />} />
+          <Route path="tasks" element={<Tasks />} />
+          <Route path="payments" element={<Payments />} />
+          <Route path="tickets" element={<Tickets />} />
+          <Route path="notes" element={<Notes />} />
           <Route path="products" element={<Products />} />
           <Route path="contact" element={<Contact />} />
-           <Route path="users" element={<Users />} />
+          <Route path="users" element={<Users />} />
           <Route path="roles" element={<RolesPermissions />} />
-           <Route path="marketing-dashboard" element={<MarketingDashboard />} />
-<Route path="campaigns" element={<CampaignsList />} />
-<Route path="whatsapp-campaign" element={<WhatsAppCampaign />} />
+          <Route path="marketing-dashboard" element={<MarketingDashboard />} />
+          <Route path="campaigns" element={<CampaignsList />} />
+          <Route path="whatsapp-campaign" element={<WhatsAppCampaign />} />
           <Route path="settings" element={<Settings />} />
 
         </Route>

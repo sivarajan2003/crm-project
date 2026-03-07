@@ -2,18 +2,18 @@ import apiCall from './api';
 
 const invoiceService = {
   // Get all invoices
-  getAllInvoices: async (filters = {}) => {
+  getAll: async (filters = {}) => {
     const queryParams = new URLSearchParams(filters).toString();
     return await apiCall(`/invoices${queryParams ? `?${queryParams}` : ''}`);
   },
 
   // Get invoice by ID
-  getInvoiceById: async (id) => {
+  getById: async (id) => {
     return await apiCall(`/invoices/${id}`);
   },
 
   // Create invoice
-  createInvoice: async (invoiceData) => {
+  create: async (invoiceData) => {
     return await apiCall('/invoices', {
       method: 'POST',
       body: JSON.stringify(invoiceData),
@@ -21,7 +21,7 @@ const invoiceService = {
   },
 
   // Update invoice
-  updateInvoice: async (id, invoiceData) => {
+  update: async (id, invoiceData) => {
     return await apiCall(`/invoices/${id}`, {
       method: 'PUT',
       body: JSON.stringify(invoiceData),
@@ -29,7 +29,7 @@ const invoiceService = {
   },
 
   // Delete invoice
-  deleteInvoice: async (id) => {
+  delete: async (id) => {
     return await apiCall(`/invoices/${id}`, {
       method: 'DELETE',
     });

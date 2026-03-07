@@ -1,0 +1,452 @@
+import { useState, useEffect } from "react";
+import { Card, Table, Input, Button, Modal, Form, Select, Tag, Avatar, message, Popconfirm, Row, Col, Spin } from "antd";
+import { SearchOutlined, PlusOutlined, UserOutlined, EditOutlined, DeleteOutlined, PhoneOutlined, MailOutlined } from "@ant-design/icons";
+import { motion } from "framer-motion";
+import { leadService, userService } from "../services";
+
+const { Option } = Select;
+
+export default function Leads() {
+  const [leads, setLeads] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingLead, setEditingLead] = useState(null);
+  const [searchText, setSearchText] = useState("");
+  const [users, setUsers] = useState([]);
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    fetchLeads();
+    fetchUsers();
+  }, []);
+
+  const fetchLeads = async () => {
+    setLoading(true);
+    try {
+      const response = await leadService.getAll();
+      if (response.success) {
+        setLeads(response.data || []);
+      }
+    } catch (error) {
+      message.error('Failed to load leads');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const response = await userService.getAll();
+      if (response.success) {
+        setUsers(response.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to load users');
+    }
+  };
+
+  const handleSubmit = async (values) => {
+    try {
+      const response = editingLead
+        ? await leadService.update(editingLead.id, values)
+        : await leadService.create(values);
+      
+      if (response.success) {
+        message.success(editingLead ? 'Lead updated successfully' : 'Lead created successfully');
+        fetchLeads();
+        setModalOpen(false);
+        setEditingLead(null);
+        form.resetFields();
+      }
+    } catch (error) {
+      message.error('Operation failed');
+    }
+  };
+
+  const handleEdit = (lead) => {
+    setEditingLead(lead);
+    form.setFieldsValue({
+      name: lead.name,
+      email: lead.email,
+      phone: lead.phone,
+      company: lead.company,
+      source: lead.source,
+      status: lead.status,
+      assigned_to: lead.assigned_to
+    });
+    setModalOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await leadService.delete(id);
+      if (response.success) {
+        message.success('Lead deleted successfully');
+        fetchLeads();
+      }
+    } catch (error) {
+      message.error('Delete failed');
+    }
+  };
+
+  const handleConvert = async (lead) => {
+    Modal.confirm({
+      title: 'Convert Lead to Customer',
+      content: `Are you sure you want to convert "${lead.name}" to a customer? This will create a new customer record and mark the lead as Won.`,
+      okText: 'Yes, Convert',
+      okType: 'primary',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        try {
+          const response = await leadService.convertToCustomer(lead.id);
+          if (response.success) {
+            if (response.data.alreadyConverted) {
+              message.warning('This lead has already been converted to a customer');
+            } else {
+              message.success(`Lead converted successfully! Customer "${response.data.customer.name}" has been created.`);
+            }
+            fetchLeads();
+          }
+        } catch (error) {
+          message.error('Failed to convert lead');
+        }
+      }
+    });
+  };
+
+  const handleAddNew = () => {
+    setEditingLead(null);
+    form.resetFields();
+    setModalOpen(true);
+  };
+
+  const filteredLeads = leads.filter(lead =>
+    lead.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+    lead.email?.toLowerCase().includes(searchText.toLowerCase()) ||
+    lead.company?.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  const getStatusColor = (status) => {
+    const colors = {
+      'New': 'blue',
+      'Contacted': 'cyan',
+      'Qualified': 'green',
+      'Proposal': 'orange',
+      'Won': 'success',
+      'Lost': 'error'
+    };
+    return colors[status] || 'default';
+  };
+
+  const columns = [
+    {
+      title: "Lead",
+      dataIndex: "name",
+      render: (text, record) => (
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <Avatar 
+            style={{ backgroundColor: "#ff8a00", color: "#fff" }} 
+            icon={<UserOutlined />}
+          >
+            {text?.charAt(0)}
+          </Avatar>
+          <div>
+            <div style={{ fontWeight: 600, color: "#111827" }}>{text}</div>
+            <div style={{ fontSize: 12, color: "#9ca3af" }}>{record.lead_code}</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Contact",
+      key: "contact",
+      render: (_, record) => (
+        <div>
+          {record.email && (
+            <div style={{ fontSize: 13, color: "#4b5563", marginBottom: 4 }}>
+              <MailOutlined style={{ marginRight: 4 }} />
+              {record.email}
+            </div>
+          )}
+          {record.phone && (
+            <div style={{ fontSize: 13, color: "#4b5563" }}>
+              <PhoneOutlined style={{ marginRight: 4 }} />
+              {record.phone}
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      title: "Company",
+      dataIndex: "company",
+      render: (text) => <span style={{ color: "#4b5563" }}>{text || 'N/A'}</span>
+    },
+    {
+      title: "Source",
+      dataIndex: "source",
+      render: (text) => <span style={{ color: "#4b5563" }}>{text || 'N/A'}</span>
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      render: (status) => (
+        <Tag color={getStatusColor(status)}>
+          {status}
+        </Tag>
+      ),
+    },
+    {
+      title: "Assigned To",
+      dataIndex: "assigned_to",
+      render: (_, record) => (
+        <span style={{ color: "#4b5563" }}>
+          {record.assignedTo?.name || 'Unassigned'}
+        </span>
+      ),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record) => (
+        <div style={{ display: 'flex', gap: 8 }}>
+          {record.status !== 'Won' && (
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => handleConvert(record)}
+              style={{ background: '#52c41a', borderColor: '#52c41a' }}
+            >
+              Convert
+            </Button>
+          )}
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record)}
+          >
+            Edit
+          </Button>
+          <Popconfirm
+            title="Delete lead"
+            description="Are you sure you want to delete this lead?"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button type="link" danger icon={<DeleteOutlined />}>
+              Delete
+            </Button>
+          </Popconfirm>
+        </div>
+      ),
+    },
+  ];
+
+  const cardAnimation = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i) => ({
+      opacity: 1,
+      y: 0,
+      transition: { delay: i * 0.1, duration: 0.5, ease: "easeOut" }
+    })
+  };
+
+  return (
+    <div style={{ padding: "24px", minHeight: "100vh", background: "#f8fafc" }}>
+      {loading && !leads.length ? (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+          <Spin size="large" />
+        </div>
+      ) : (
+        <>
+          {/* HEADER */}
+          <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+            <Col>
+              <div style={{ fontSize: 26, fontWeight: 700, color: "#111827" }}>Leads</div>
+              <div style={{ fontSize: 14, color: "#6b7280" }}>
+                Manage and track all leads
+              </div>
+            </Col>
+            <Col>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                style={{ height: 40, borderRadius: 8 }}
+                onClick={handleAddNew}
+              >
+                Add Lead
+              </Button>
+            </Col>
+          </Row>
+
+          {/* STATS */}
+          <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+            {[
+              { title: "Total Leads", count: leads.length, color: "#ff8a00" },
+              { title: "New", count: leads.filter(l => l.status === 'New').length, color: "#1677ff" },
+              { title: "Qualified", count: leads.filter(l => l.status === 'Qualified').length, color: "#52c41a" },
+              { title: "Won", count: leads.filter(l => l.status === 'Won').length, color: "#10b981" },
+            ].map((item, index) => (
+              <Col xs={24} sm={12} lg={6} key={index}>
+                <motion.div
+                  custom={index}
+                  initial="hidden"
+                  animate="visible"
+                  variants={cardAnimation}
+                >
+                  <Card style={{ borderRadius: 12, borderTop: `4px solid ${item.color}` }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "#6b7280", textTransform: "uppercase" }}>
+                      {item.title}
+                    </div>
+                    <div style={{ fontSize: 32, fontWeight: 800, marginTop: 8, color: "#111827" }}>
+                      {item.count}
+                    </div>
+                  </Card>
+                </motion.div>
+              </Col>
+            ))}
+          </Row>
+
+          {/* SEARCH */}
+          <Card style={{ borderRadius: 12, marginBottom: 20 }}>
+            <Input
+              placeholder="Search leads by name, email, or company..."
+              prefix={<SearchOutlined style={{ color: "#9ca3af" }} />}
+              style={{ height: 40, borderRadius: 8 }}
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+          </Card>
+
+          {/* LEADS TABLE */}
+          <Card variant="borderless" style={{ borderRadius: 14, boxShadow: "0 6px 18px rgba(15,23,42,0.06)" }}>
+            <div style={{ padding: "20px 24px", borderBottom: "1px solid #f0f0f0" }}>
+              <span style={{ fontSize: 16, fontWeight: 600, color: "#111827" }}>
+                Lead Directory ({filteredLeads.length})
+              </span>
+            </div>
+            <Table
+              columns={columns}
+              dataSource={filteredLeads}
+              rowKey="id"
+              loading={loading}
+              pagination={{ pageSize: 10 }}
+              scroll={{ x: true }}
+            />
+          </Card>
+        </>
+      )}
+
+      {/* ADD/EDIT MODAL */}
+      <Modal
+        title={editingLead ? "Edit Lead" : "Add Lead"}
+        open={modalOpen}
+        onCancel={() => {
+          setModalOpen(false);
+          setEditingLead(null);
+          form.resetFields();
+        }}
+        footer={null}
+        centered
+        width={600}
+      >
+        <Form form={form} layout="vertical" onFinish={handleSubmit}>
+          <Form.Item 
+            label="Name" 
+            name="name" 
+            rules={[{ required: true, message: 'Please enter name' }]}
+          >
+            <Input placeholder="Enter name" />
+          </Form.Item>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item 
+                label="Email" 
+                name="email" 
+                rules={[{ type: 'email', message: 'Please enter valid email' }]}
+              >
+                <Input placeholder="Enter email" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="Phone" name="phone">
+                <Input placeholder="Enter phone" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item label="Company" name="company">
+                <Input placeholder="Enter company" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="Source" name="source">
+                <Input placeholder="e.g., Website, Referral" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item 
+                label="Status" 
+                name="status" 
+                rules={[{ required: true, message: 'Please select status' }]}
+              >
+                <Select placeholder="Select status">
+                  <Option value="New">New</Option>
+                  <Option value="Contacted">Contacted</Option>
+                  <Option value="Qualified">Qualified</Option>
+                  <Option value="Proposal">Proposal</Option>
+                  <Option value="Won">Won</Option>
+                  <Option value="Lost">Lost</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="Assigned To" name="assigned_to">
+                <Select 
+                  placeholder="Select user" 
+                  showSearch 
+                  optionFilterProp="children"
+                  allowClear
+                >
+                  <Option value={null}>Unassigned</Option>
+                  {users.map(user => (
+                    <Option key={user.id} value={user.id}>
+                      {user.name} ({user.role})
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={10}>
+            <Col span={12}>
+              <Button 
+                block 
+                onClick={() => {
+                  setModalOpen(false);
+                  setEditingLead(null);
+                  form.resetFields();
+                }}
+              >
+                Cancel
+              </Button>
+            </Col>
+            <Col span={12}>
+              <Button type="primary" block htmlType="submit">
+                {editingLead ? 'Update' : 'Create'} Lead
+              </Button>
+            </Col>
+          </Row>
+        </Form>
+      </Modal>
+    </div>
+  );
+}
