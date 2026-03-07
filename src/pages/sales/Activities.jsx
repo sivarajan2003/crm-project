@@ -22,13 +22,16 @@ import {
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Typography } from "antd";
+import { Modal, Form, DatePicker } from "antd";
+
 const { Option } = Select;
 const { Title, Text } = Typography;
 export default function Activities() {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
   const [searchText, setSearchText] = useState("");
-
+  const [open, setOpen] = useState(false);
+const [form] = Form.useForm();
   // Dutch specific styles mapping 
   const styles = {
     page: { padding: "8px 24px", minHeight: "100vh", width: "100%", background: "#f8fafc" },
@@ -118,12 +121,13 @@ export default function Activities() {
   </Col>
         <Col>
           <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            style={styles.primaryBtn}
-          >
-            Add Activity
-          </Button>
+  type="primary"
+  icon={<PlusOutlined />}
+  style={styles.primaryBtn}
+  onClick={() => setOpen(true)}
+>
+  Add Activity
+</Button>
         </Col>
       </Row>
 
@@ -329,6 +333,100 @@ export default function Activities() {
           </div>
         </Card>
       </motion.div>
+      <Modal
+  title="Add Activity"
+  open={open}
+  onCancel={() => setOpen(false)}
+  footer={null}
+  centered
+  width={600}
+  zIndex={2000}
+>
+  <Form
+    form={form}
+    layout="vertical"
+  >
+    <Row gutter={12}>
+      <Col span={12}>
+        <Form.Item
+          label="Activity Title"
+          name="title"
+          rules={[{ required: true }]}
+        >
+          <Input placeholder="Enter activity title" />
+        </Form.Item>
+      </Col>
+
+      <Col span={12}>
+        <Form.Item
+          label="Activity Type"
+          name="type"
+        >
+          <Select>
+            <Option value="Call">Call</Option>
+            <Option value="Email">Email</Option>
+            <Option value="Meeting">Meeting</Option>
+            <Option value="Task">Task</Option>
+          </Select>
+        </Form.Item>
+      </Col>
+    </Row>
+
+    <Form.Item
+      label="Description"
+      name="subtitle"
+    >
+      <Input placeholder="Enter description" />
+    </Form.Item>
+
+    <Row gutter={12}>
+      <Col span={12}>
+        <Form.Item
+          label="Owner"
+          name="owner"
+        >
+          <Input placeholder="Assigned person" />
+        </Form.Item>
+      </Col>
+
+      <Col span={12}>
+        <Form.Item
+          label="Due Date"
+          name="date"
+        >
+          <DatePicker style={{ width: "100%" }} />
+        </Form.Item>
+      </Col>
+    </Row>
+
+    <Row gutter={10}>
+      <Col span={12}>
+        <Button
+          block
+          onClick={() => setOpen(false)}
+        >
+          Cancel
+        </Button>
+      </Col>
+
+      <Col span={12}>
+        <Button
+          type="primary"
+          block
+          onClick={() => {
+            form.validateFields().then((values) => {
+              console.log(values);
+              setOpen(false);
+              form.resetFields();
+            });
+          }}
+        >
+          Save Activity
+        </Button>
+      </Col>
+    </Row>
+  </Form>
+</Modal>
     </div>
   );
 }

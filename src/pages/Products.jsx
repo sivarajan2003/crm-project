@@ -3,6 +3,9 @@ import { Search, Plus, Package } from "lucide-react";
 import AddProductModal from "../components/AddProductModal";
 import { motion } from "framer-motion";
 import { Typography } from "antd";
+import { Drawer } from "antd";
+
+const { Title, Text } = Typography;
 const productData = [
   { id: 1, name: "CRM Enterprise License", category: "Software", price: "₹25,000", stock: 120 },
   { id: 2, name: "Cloud Migration Service", category: "Service", price: "₹45,000", stock: 50 },
@@ -16,10 +19,15 @@ export default function Product() {
   const [products, setProducts] = useState(productData);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
-import { Typography } from "antd";  const filteredProducts = products.filter((p) =>
+ const filteredProducts = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   );
-
+const [selectedProduct, setSelectedProduct] = useState(null);
+const [openDrawer, setOpenDrawer] = useState(false);
+const handleViewDetails = (product) => {
+  setSelectedProduct(product);
+  setOpenDrawer(true);
+};
   const handleAddProduct = (newProduct) => {
     const product = {
       id: Date.now(),
@@ -118,9 +126,12 @@ import { Typography } from "antd";  const filteredProducts = products.filter((p)
                 {product.price}
               </div>
 
-              <button className="flex items-center justify-center border border-[#d1d5db] bg-white text-[#4b5563] hover:text-[#1890ff] hover:border-[#1890ff] px-4 h-9 rounded-lg text-[13px] font-medium transition-colors hover:bg-blue-50">
-                View Details
-              </button>
+              <button
+  onClick={() => handleViewDetails(product)}
+  className="flex items-center justify-center border border-[#d1d5db] bg-white text-[#4b5563] hover:text-[#1890ff] hover:border-[#1890ff] px-4 h-9 rounded-lg text-[13px] font-medium transition-colors hover:bg-blue-50"
+>
+  View Details
+</button>
 
             </div>
           </motion.div>
@@ -140,6 +151,42 @@ import { Typography } from "antd";  const filteredProducts = products.filter((p)
         onClose={() => setShowModal(false)}
         onAdd={handleAddProduct}
       />
+     <Drawer
+  title="Product Details"
+  placement="right"
+  width={420}
+  onClose={() => setOpenDrawer(false)}
+  open={openDrawer}
+  mask={false}
+>
+
+{selectedProduct && (
+  <div className="space-y-4">
+
+    <div>
+      <p className="text-gray-500 text-sm">Product Name</p>
+      <h3 className="text-lg font-semibold">{selectedProduct.name}</h3>
+    </div>
+
+    <div>
+      <p className="text-gray-500 text-sm">Category</p>
+      <h3 className="font-medium">{selectedProduct.category}</h3>
+    </div>
+
+    <div>
+      <p className="text-gray-500 text-sm">Price</p>
+      <h3 className="text-blue-600 font-bold text-lg">{selectedProduct.price}</h3>
+    </div>
+
+    <div>
+      <p className="text-gray-500 text-sm">Stock Available</p>
+      <h3 className="font-medium">{selectedProduct.stock}</h3>
+    </div>
+
+  </div>
+)}
+
+</Drawer>
     </div>
   );
 }

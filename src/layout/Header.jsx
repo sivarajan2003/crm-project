@@ -3,7 +3,9 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserOutlined,
-  DownOutlined, // <-- Added this icon to match the Dutch dropdown arrow
+  DownOutlined,
+  LogoutOutlined,
+  SettingOutlined
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
@@ -62,17 +64,34 @@ export default function AppHeader({ collapsed, setCollapsed }) {
         <Dropdown
           placement="bottomRight"
           trigger={["click"]}
-          menu={{
-            items: [
-              { key: "1", label: "Profile" },
-              { key: "logout", label: "Logout" },
-            ],
-            onClick: ({ key }) => {
-              if (key === "logout") {
-                handleLogout();
-              }
-            }
-          }}
+         menu={{
+  items: [
+  {
+    key: "profile",
+    icon: <SettingOutlined />,
+    label: "Profile"
+  },
+  {
+    type: "divider"
+  },
+  {
+    key: "logout",
+    icon: <LogoutOutlined style={{ color: "red" }} />,
+    label: <span style={{ color: "red" }}>Logout</span>
+  }
+],
+  onClick: ({ key }) => {
+
+    if (key === "profile") {
+      navigate("/settings");
+    }
+
+    if (key === "logout") {
+      handleLogout();
+    }
+
+  }
+}}
         >
           <div
             className="cursor-pointer flex items-center gap-3 p-1 pr-3 rounded-full border border-transparent hover:border-gray-200 transition-all duration-200"

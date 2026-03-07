@@ -1,4 +1,4 @@
-import { Modal, Input, Form, Button, Switch } from "antd";
+import { Modal, Input, Form, Button, Switch, Row, Col } from "antd";
 
 export default function AddLeads({ open, onClose, onSave }) {
   const [form] = Form.useForm();
@@ -10,56 +10,67 @@ export default function AddLeads({ open, onClose, onSave }) {
         ...values
       });
       form.resetFields();
+      onClose();
     });
   };
 
   return (
     <Modal
-      title="Add New Lead"
+      title="Add Lead"
       open={open}
       onCancel={onClose}
       footer={null}
       centered
-      width={500}
+      zIndex={2000}
     >
       <Form form={form} layout="vertical">
 
         <Form.Item label="Lead Name" name="name" rules={[{ required: true }]}>
-          <Input />
+          <Input placeholder="Enter lead name" />
         </Form.Item>
 
         <Form.Item label="Company" name="company" rules={[{ required: true }]}>
-          <Input />
+          <Input placeholder="Enter company" />
         </Form.Item>
 
         <Form.Item label="Email" name="email">
-          <Input />
+          <Input placeholder="Enter email" />
         </Form.Item>
 
         <Form.Item label="Phone" name="phone">
-          <Input />
+          <Input placeholder="Enter phone" />
         </Form.Item>
 
         <Form.Item label="Value" name="value">
-          <Input placeholder="₹ Amount"/>
+          <Input placeholder="₹ Amount" />
         </Form.Item>
 
         <Form.Item label="Assigned To" name="assigned">
-          <Input />
+          <Input placeholder="Sales person" />
         </Form.Item>
 
-        <Form.Item label="Status" name="status">
-          <Switch defaultChecked />
+        <Form.Item label="Status" name="status" valuePropName="checked">
+          <Switch />
         </Form.Item>
 
-        <Button
-          type="primary"
-          block
-          style={{ marginTop: 10 }}
-          onClick={handleSubmit}
-        >
-          Save Lead
-        </Button>
+        {/* Buttons Row */}
+        <Row gutter={10}>
+          <Col span={12}>
+            <Button block onClick={onClose}>
+              Cancel
+            </Button>
+          </Col>
+
+          <Col span={12}>
+            <Button
+              type="primary"
+              block
+              onClick={handleSubmit}
+            >
+              Save Lead
+            </Button>
+          </Col>
+        </Row>
 
       </Form>
     </Modal>

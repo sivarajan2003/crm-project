@@ -25,8 +25,7 @@ closeModal();
 
 return(
 
-<div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-
+<div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]">
 <div className="bg-white p-8 rounded-xl shadow-xl w-[700px] max-w-[90%] space-y-6">
 
 <h1 className="text-2xl font-semibold">

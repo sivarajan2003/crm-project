@@ -3,7 +3,7 @@ export default function DealDetailsModal({ open, onClose, deal }) {
   if (!open || !deal) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]">
 
       <div className="bg-white w-[450px] p-6 rounded-xl shadow-xl">
 

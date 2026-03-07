@@ -275,8 +275,9 @@ const [form] = Form.useForm();
   onCancel={() => setOpen(false)}
   footer={null}
   centered
+  zIndex={2000}
 >
-  <Form form={form} layout="vertical">
+    <Form form={form} layout="vertical">
 
     <Form.Item label="Customer Name" name="name" rules={[{ required: true }]}>
       <Input placeholder="Enter name" />

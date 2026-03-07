@@ -75,7 +75,7 @@ const { Title, Text } = Typography;
       {/* ================= ROLES TABLE ================= */}
       <motion.div 
         variants={layoutAnimation} initial="hidden" animate="visible"
-        className="bg-white rounded-[14px] shadow-[0_6px_18px_rgba(15,23,42,0.06)] border border-[#transparent] overflow-hidden"
+        className="bg-white rounded-[14px] shadow-[0_6px_18px_rgba(15,23,42,0.06)] border border-transparent overflow-hidden"
       >
         <div className="p-5 border-b border-[#f0f0f0] flex items-center gap-2">
            <Shield size={18} className="text-[#1677ff]" />
@@ -90,7 +90,7 @@ const { Title, Text } = Typography;
                 <th className="py-4 px-6 font-medium">Role Name</th>
                 <th className="py-4 px-4 font-medium text-center">Assigned Users</th>
                 <th className="py-4 px-4 font-medium">Permissions Limit</th>
-                <th className="py-4 px-6 font-medium text-right">Actions</th>
+                <th className="py-4 px-6 font-medium text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -118,26 +118,32 @@ const { Title, Text } = Typography;
                   </td>
 
                   {/* ACTIONS */}
-                  <td className="py-4 px-6">
-                    <div className="flex items-center justify-end gap-3 text-[#9ca3af]">
-                      <button
-                        onClick={() => handleEdit(r)}
-                        className="flex items-center justify-center w-[32px] h-[32px] rounded-lg text-[#6b7280] hover:text-[#1677ff] hover:bg-blue-50 transition-colors"
-                      >
-                        <Edit size={16}/>
-                      </button>
+                  <td className="py-4 px-6 text-center">
+                 <div className="flex items-center justify-center gap-3 text-gray-400">
 
-                      <button
-                        onClick={() => {
-                          if(window.confirm(`Are you sure you want to delete the ${r.name} role?`)){
-                            handleDelete(r.id);
-                          }
-                        }}
-                        className="flex items-center justify-center w-[32px] h-[32px] rounded-lg text-[#6b7280] hover:text-[#dc2626] hover:bg-red-50 transition-colors"
-                      >
-                        <Trash2 size={16}/>
-                      </button>
-                    </div>
+  {/* Edit */}
+  <button
+    onClick={() => handleEdit(r)}
+    className="hover:text-blue-600 transition p-1"
+    title="Edit Role"
+  >
+    <Edit size={18} />
+  </button>
+
+  {/* Delete */}
+  <button
+    onClick={() => {
+      if (window.confirm(`Are you sure you want to delete the ${r.name} role?`)) {
+        handleDelete(r.id);
+      }
+    }}
+    className="hover:text-red-600 transition p-1"
+    title="Delete Role"
+  >
+    <Trash2 size={18} />
+  </button>
+
+</div>
                   </td>
 
                 </tr>

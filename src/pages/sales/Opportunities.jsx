@@ -2,14 +2,14 @@ import { Card, Row, Col, Table, Input, Select, Button, Typography, Grid } from "
 import { SearchOutlined, PlusOutlined, FilterOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { motion } from "framer-motion";
-
+import AddOpportunity from "../../components/AddOpportunity";
 const { Option } = Select;
 const { Title,Text } = Typography;
 
 export default function Opportunities() {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
-  
+  const [modalOpen, setModalOpen] = useState(false);
   const [viewType, setViewType] = useState("all");
   const [stageFilter, setStageFilter] = useState("all");
   const [searchText, setSearchText] = useState("");
@@ -162,12 +162,13 @@ export default function Opportunities() {
               Export
             </Button>
             <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              style={styles.primaryBtn}
-            >
-              Add Opportunity
-            </Button>
+  type="primary"
+  icon={<PlusOutlined />}
+  style={styles.primaryBtn}
+  onClick={() => setModalOpen(true)}
+>
+  Add Opportunity
+</Button>
           </div>
         </Col>
       </Row>
@@ -338,6 +339,14 @@ export default function Opportunities() {
           )}
         </Card>
       </motion.div>
+      <AddOpportunity
+  open={modalOpen}
+  onClose={() => setModalOpen(false)}
+  onSave={(newOpportunity) => {
+    console.log(newOpportunity);
+    setModalOpen(false);
+  }}
+/>
     </div>
   );
 }

@@ -379,19 +379,19 @@ useEffect(() => {
           }
         }}
         className="group transition-all duration-200"
-        style={{
-          padding: collapsed && !isMobile ? 12 : "12px 16px",
-          cursor: "pointer",
-          margin: "4px 0",
-          borderRadius: 12,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: collapsed && !isMobile ? "center" : "flex-start",
-          color: active ? "#ffffff" : INACTIVE_TEXT,
-          backgroundColor: active ? primaryColor : "transparent",
-          boxShadow: active ? `0 4px 6px -1px ${primaryColor}40` : "none",
-          fontWeight: active ? 600 : 500,
-        }}
+      style={{
+  padding: collapsed && !isMobile ? 14 : "14px 18px",
+  cursor: "pointer",
+  margin: "8px 0",
+  borderRadius: 14,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: collapsed && !isMobile ? "center" : "flex-start",
+  color: active ? "#ffffff" : INACTIVE_TEXT,
+  background: active ? "#2F2A68" : "transparent",
+  boxShadow: active ? "0 6px 14px rgba(47,42,104,0.35)" : "none",
+  fontWeight: active ? 600 : 500,
+}}
         onMouseEnter={(e) => {
           if (!active) e.currentTarget.style.backgroundColor = theme === "dark" ? "rgba(255,255,255,0.05)" : "#F3F4F6";
         }}
@@ -399,11 +399,25 @@ useEffect(() => {
           if (!active) e.currentTarget.style.backgroundColor = "transparent";
         }}
       >
-        <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 20, minWidth: 24 }}>
-          {item.icon}
+<span style={{
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: 18,
+  width: 22
+}}>
+            {item.icon}
         </span>
         {/* show label only when not collapsed OR on mobile */}
-        {(!collapsed || isMobile) && <span style={{ marginLeft: 12 }}>{item.label}</span>}
+{(!collapsed || isMobile) && (
+  <span style={{
+    marginLeft: 14,
+    fontSize: 15,
+    fontWeight: 500
+  }}>
+    {item.label}
+  </span>
+)}
         {item.children && item.children.length > 0 && (!collapsed || isMobile) && (
           <span style={{ marginLeft: "auto", fontSize: 14, opacity: 0.7 }}>{openMenu === item.key ? <ChevronUp size={16} /> : <ChevronDown size={16} />}</span>
         )}
@@ -491,7 +505,7 @@ useEffect(() => {
                   alignItems: "center",
                   justifyContent: screens.xs ? "center" : collapsed && !isMobile ? "center" : "flex-start",
                   padding: collapsed && !isMobile ? "20px 0" : "20px 24px",
-                  height: 80,
+                  height: 90,
                   borderBottom: theme === "dark" ? "1px solid #374151" : "1px solid #e5e7eb",
                   marginBottom: 8,
                 }}
@@ -522,7 +536,7 @@ useEffect(() => {
               </div>
 
               {/* Menu items */}
-              <div className="custom-scrollbar" style={{ flexGrow: 1, overflowY: "auto", padding: "16px 12px" }}>
+              <div className="custom-scrollbar" style={{ flexGrow: 1, overflowY: "auto", padding: "20px 16px" }}>
                 {menuItems.map((item) => (
                   <div key={item.key}>
                     {renderParentButton(item)}

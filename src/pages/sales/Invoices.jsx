@@ -79,6 +79,7 @@ Invoices
      Manage your billing and payments
   </Text>
 </div>
+ 
         <button
           onClick={() => setShowModal(true)}
           className="flex items-center gap-2 bg-[#1677ff] hover:bg-[#0958d9] transition-colors text-white px-4 h-10 rounded-lg font-medium text-[14px] shadow-sm"
@@ -86,6 +87,7 @@ Invoices
           <Plus size={18}/>
           Create Invoice
         </button>
+        
       </div>
 
       {/* ================= SUMMARY CARDS (Animated) ================= */}
@@ -133,30 +135,44 @@ Invoices
           />
         </div>
 
-        {/* Filter Navigation */}
-        <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-hide">
-          {["All", "Paid", "Pending", "Overdue"].map(tab => (
-            <button
-              key={tab}
-              onClick={() => setFilter(tab)}
-              className={`px-4 h-10 rounded-lg text-[13px] font-medium transition-all whitespace-nowrap
-                ${filter === tab
-                ? "bg-[#1890ff] text-white shadow-md shadow-blue-500/20 border-none"
-                : "bg-white border text-[#4b5563] hover:bg-gray-50 hover:border-[#9ca3af]"}
-              `}
-              style={{ borderColor: filter === tab ? 'transparent' : '#d1d5db' }}
-            >
-              {tab}
-            </button>
-          ))}
-          <button className="flex items-center justify-center gap-2 text-[#4b5563] font-medium border border-[#d1d5db] bg-white hover:bg-gray-50 px-4 h-10 rounded-lg transition-colors ml-auto sm:ml-0">
-            <Filter size={16}/>
-            Filter
-          </button>
-        </div>
+        
+        {/* STATUS TABS */}
+<div className="flex items-center gap-2 bg-gray-100 p-1 rounded-xl">
+
+ {["All", "Paid", "Pending", "Overdue"].map((tab) => {
+  const count =
+    tab === "All"
+      ? invoicesData.length
+      : invoicesData.filter((i) => i.status === tab).length;
+
+  return (
+    <button
+      key={tab}
+      onClick={() => setFilter(tab)}
+      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all
+      ${
+        filter === tab
+          ? "bg-blue-500 text-white shadow"
+          : "text-gray-600 hover:bg-gray-200"
+      }`}
+    >
+      {tab} ({count})
+    </button>
+  );
+})}
+  {/* <button className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-200 rounded-lg">
+    <Filter size={16} />
+    Filter
+  </button> */}
+
+</div>
       </motion.div>
 
       {/* ================= INVOICE LIST ================= */}
+      {/* <div className="flex justify-end text-sm text-gray-500 font-semibold mb-2 pr-2">
+  Actions
+</div> */}
+
       <div className="space-y-4">
         {filteredInvoices.map((inv, i) => (
           <motion.div
@@ -209,33 +225,35 @@ Invoices
     ₹{inv.amount.toLocaleString("en-IN")}
   </h2>
 </div>
-<div className="flex items-center gap-4 text-gray-500">
+
+<div className="flex items-center gap-3 text-gray-400">
 
   <button
     onClick={() => handleView(inv)}
-    className="hover:text-gray-800 transition"
-    title="View Invoice"
+    className="hover:text-gray-700 transition p-1"
+    title="View"
   >
     <Eye size={18} />
   </button>
 
   <button
     onClick={() => handleSend(inv)}
-    className="hover:text-blue-600 transition"
-    title="Send Invoice"
+    className="hover:text-blue-600 transition p-1"
+    title="Send"
   >
     <Send size={18} />
   </button>
 
   <button
     onClick={() => handleDownload(inv)}
-    className="hover:text-gray-800 transition"
-    title="Download Invoice"
+    className="hover:text-gray-700 transition p-1"
+    title="Download"
   >
     <Download size={18} />
   </button>
 
-</div>         </div>
+</div>         
+</div>
           </motion.div>
         ))}
 

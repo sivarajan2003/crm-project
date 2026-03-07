@@ -32,15 +32,16 @@ function App() {
       <Routes>
 
         {/* LOGIN PAGE */}
-       <Route
-  path="/login"
-  element={isAuth ? <Navigate to="/dashboard" /> : <Login />}
-/>
+      <Route path="/login" element={<Login />} />
 
         {/* CRM LAYOUT */}
-        <Route
+<Route
   path="/"
-  element={isAuth ? <MainLayout /> : <Navigate to="/login" />}
+  element={
+    <ProtectedRoute>
+      <MainLayout />
+    </ProtectedRoute>
+  }
 >
   <Route index element={<Navigate to="dashboard" />} />
 

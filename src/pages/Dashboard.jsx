@@ -6,6 +6,7 @@ import {
   RiseOutlined,
   RightOutlined
 } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import callIcon from "../assets/icons/d1.gif";
 import leadIcon from "../assets/icons/d2.gif";
@@ -14,10 +15,11 @@ import conversionIcon from "../assets/icons/d4.gif";
 const { Title, Text } = Typography;
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
 
-  // Dutch specific styles mapping
+
   const styles = {
     page: { padding: "8px 24px", minHeight: "100vh", width: "100%", background: "#f8fafc" },
     roundedCard: { borderRadius: 14, boxShadow: "0 6px 18px rgba(15,23,42,0.06)", border: "none" },
@@ -39,7 +41,8 @@ statIconCircle: {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  background: "rgba(255,255,255,0.15)"
+  background: "#ffffff",
+boxShadow: "0 4px 10px rgba(0,0,0,0.1)"
 },    statChevron: { width: 44, height: 44, borderRadius: 10, background: "rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "center" },
   };
 const cardAnimation = {
@@ -70,7 +73,16 @@ const hoverEffect = {
     { key: 2, name: "Priya Sharma", company: "Tech Solutions", stage: "Negotiation", value: "₹78,000" },
     { key: 3, name: "Rahul Kumar", company: "Global CRM", stage: "New Lead", value: "₹25,000" },
   ];
-
+const iconAnimation = {
+  animate: {
+    scale: [1, 1.2, 1],
+    rotate: [0, 10, -10, 0],
+    transition: {
+      duration: 2,
+      repeat: Infinity
+    }
+  }
+};
   return (
     <div style={styles.page}>
       {/* HEADER */}
@@ -82,9 +94,13 @@ const hoverEffect = {
           <Text type="secondary">Overview & Performance</Text>
         </Col>
         <Col style={{ marginTop: screens.xs ? 10 : 0 }}>
-          <Button type="primary" style={{ borderRadius: 6, fontWeight: 500 }}>
-            + Add Lead
-          </Button>
+          <Button
+  type="primary"
+  style={{ borderRadius: 6, fontWeight: 500 }}
+  onClick={() => navigate("/product")}
+>
+  + Add Lead
+</Button>
         </Col>
       </Row>
 
@@ -105,16 +121,18 @@ const hoverEffect = {
                 <div style={styles.statMeta}>Total tracked calls</div>
               </div>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 12 }}>
-              <div style={styles.statIconCircle}>
-  <img 
+        <div style={styles.statIconCircle}>
+  <motion.div animate={iconAnimation.animate}>
+    <img
   src={callIcon}
+  alt="calls"
   style={{
-    width: 36,
-    height: 36,
-    //objectFit: "contain",
-    mixBlendMode: "multiply"
+    width: 28,
+    height: 28,
+    objectFit: "contain"
   }}
 />
+  </motion.div>
 </div>
                 <div style={styles.statChevron}>
                   <RightOutlined style={{ color: "rgba(255,255,255,0.9)" }} />
@@ -141,16 +159,14 @@ const hoverEffect = {
               <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 12 }}>
                 <div style={styles.statIconCircle}>
                   {/* <img src={leadIcon} style={{ width: 26, height: 26 }} /> */}
-                  <div style={styles.statIconCircle}>
-  <img 
+                 <div style={styles.statIconCircle}>
+  <motion.div animate={iconAnimation.animate}>
+   <img
   src={leadIcon}
-  style={{
-    width: 36,
-    height: 36,
-    //objectFit: "contain",
-     mixBlendMode: "multiply"
-  }}
+  alt="leads"
+  style={{ width: 28, height: 28 }}
 />
+  </motion.div>
 </div>
                 </div>
                 <div style={styles.statChevron}>
@@ -179,16 +195,14 @@ const hoverEffect = {
                 {/* <div style={styles.statIconCircle}>
                   <img src={revenueIcon} style={{ width: 26, height: 26 }} />
                 </div> */}
-                 <div style={styles.statIconCircle}>
- <img 
+                <div style={styles.statIconCircle}>
+  <motion.div animate={iconAnimation.animate}>
+    <img
   src={revenueIcon}
-  style={{
-    width: 36,
-    height: 36,
-    //objectFit: "contain",
-     mixBlendMode: "multiply"
-  }}
+  alt="revenue"
+  style={{ width: 28, height: 28 }}
 />
+  </motion.div>
 </div>
                 <div style={styles.statChevron}>
                   <RightOutlined style={{ color: "rgba(255,255,255,0.9)" }} />
@@ -216,16 +230,14 @@ const hoverEffect = {
                 {/* <div style={styles.statIconCircle}>
                   <img src={conversionIcon} style={{ width: 26, height: 26 }} />
                 </div> */}
-                <div style={styles.statIconCircle}>
-  <img 
+             <div style={styles.statIconCircle}>
+  <motion.div animate={iconAnimation.animate}>
+    <img
   src={conversionIcon}
-  style={{
-    width: 36,
-    height: 36,
-    //objectFit: "contain",
-     mixBlendMode: "multiply"
-  }}
+  alt="conversion"
+  style={{ width: 28, height: 28 }}
 />
+  </motion.div>
 </div>
                 <div style={styles.statChevron}>
                   <RightOutlined style={{ color: "rgba(255,255,255,0.9)" }} />

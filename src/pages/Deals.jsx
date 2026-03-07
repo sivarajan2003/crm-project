@@ -105,23 +105,33 @@ export default function Deals() {
           </div>
 
           {/* TABS / PILLS */}
-          <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-hide w-full">
-            {tabs.map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 h-10 rounded-lg text-[13px] font-medium transition-all whitespace-nowrap
-                ${
-                  activeTab === tab
-                  ? "bg-[#1890ff] text-white shadow-md shadow-blue-500/20 border-none"
-                  : "bg-white border text-[#4b5563] hover:bg-gray-50 hover:border-[#9ca3af]"
-                }`}
-                style={{ borderColor: activeTab === tab ? 'transparent' : '#d1d5db' }}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
+          {/* STATUS TABS */}
+<div className="flex items-center gap-2 bg-gray-100 p-1 rounded-xl w-full overflow-x-auto">
+
+{tabs.map((tab) => {
+
+  const count =
+    tab === "All"
+      ? deals.length
+      : deals.filter((d) => d.status === tab).length;
+
+  return (
+    <button
+      key={tab}
+      onClick={() => setActiveTab(tab)}
+      className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all
+      ${
+        activeTab === tab
+          ? "bg-blue-500 text-white shadow"
+          : "text-gray-600 hover:bg-gray-200"
+      }`}
+    >
+      {tab} ({count})
+    </button>
+  );
+})}
+
+</div>
 
         </div>
       </div>

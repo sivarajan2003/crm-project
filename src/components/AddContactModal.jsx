@@ -19,7 +19,6 @@ export default function AddContactModal({ open, onClose, onAdd }) {
   };
 
   const handleSubmit = () => {
-
     if (!form.name || !form.phone) return;
 
     onAdd(form);
@@ -38,79 +37,98 @@ export default function AddContactModal({ open, onClose, onAdd }) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]">
+      <div className="bg-white w-[95%] sm:w-[500px] p-6 rounded-xl shadow-xl">
 
-      <div className="bg-white w-[90%] sm:w-[420px] p-6 rounded-xl shadow-lg">
+        <h2 className="text-xl font-semibold mb-6">Add Contact</h2>
 
-        <h2 className="text-xl font-semibold mb-4">Add Contact</h2>
+        {/* FORM GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-        <div className="flex flex-col sm:flex-row justify-end gap-3 mt-5">
+          <div>
+            <label className="text-sm text-gray-600">Full Name</label>
+            <input
+              name="name"
+              placeholder="Enter name"
+              value={form.name}
+              onChange={handleChange}
+              className="w-full border p-2 rounded mt-1"
+            />
+          </div>
 
-          <input
-            name="name"
-            placeholder="Full Name"
-            value={form.name}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
+          <div>
+            <label className="text-sm text-gray-600">Email</label>
+            <input
+              name="email"
+              placeholder="Enter email"
+              value={form.email}
+              onChange={handleChange}
+              className="w-full border p-2 rounded mt-1"
+            />
+          </div>
 
-          <input
-            name="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
+          <div>
+            <label className="text-sm text-gray-600">Phone</label>
+            <input
+              name="phone"
+              placeholder="Enter phone"
+              value={form.phone}
+              onChange={handleChange}
+              className="w-full border p-2 rounded mt-1"
+            />
+          </div>
 
-          <input
-            name="phone"
-            placeholder="Phone"
-            value={form.phone}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
+          <div>
+            <label className="text-sm text-gray-600">Company</label>
+            <input
+              name="company"
+              placeholder="Enter company"
+              value={form.company}
+              onChange={handleChange}
+              className="w-full border p-2 rounded mt-1"
+            />
+          </div>
 
-          <input
-            name="company"
-            placeholder="Company"
-            value={form.company}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
+          <div>
+            <label className="text-sm text-gray-600">Role</label>
+            <input
+              name="role"
+              placeholder="Enter role"
+              value={form.role}
+              onChange={handleChange}
+              className="w-full border p-2 rounded mt-1"
+            />
+          </div>
 
-          <input
-            name="role"
-            placeholder="Role"
-            value={form.role}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-
-          <select
-            name="status"
-            value={form.status}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          >
-            <option>Active</option>
-            <option>Inactive</option>
-            <option>Lead</option>
-          </select>
+          <div>
+            <label className="text-sm text-gray-600">Status</label>
+            <select
+              name="status"
+              value={form.status}
+              onChange={handleChange}
+              className="w-full border p-2 rounded mt-1"
+            >
+              <option>Active</option>
+              <option>Inactive</option>
+              <option>Lead</option>
+            </select>
+          </div>
 
         </div>
 
-        <div className="flex justify-end gap-3 mt-5">
+        {/* BUTTONS */}
+        <div className="flex justify-end gap-3 mt-6">
 
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-purple-600 text-white rounded w-full sm:w-auto"
+            className="px-4 py-2 border rounded-lg hover:bg-gray-100"
           >
             Cancel
           </button>
 
           <button
             onClick={handleSubmit}
-            className="px-4 py-2 bg-purple-600 text-white rounded"
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
           >
             Save Contact
           </button>
