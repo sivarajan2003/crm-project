@@ -2,17 +2,17 @@ import apiCall from './api';
 
 const customerService = {
   // Get all customers
-  getAllCustomers: async () => {
+  getAll: async () => {
     return await apiCall('/customers');
   },
 
   // Get customer by ID
-  getCustomerById: async (id) => {
+  getById: async (id) => {
     return await apiCall(`/customers/${id}`);
   },
 
   // Create customer
-  createCustomer: async (customerData) => {
+  create: async (customerData) => {
     return await apiCall('/customers', {
       method: 'POST',
       body: JSON.stringify(customerData),
@@ -20,7 +20,7 @@ const customerService = {
   },
 
   // Update customer
-  updateCustomer: async (id, customerData) => {
+  update: async (id, customerData) => {
     return await apiCall(`/customers/${id}`, {
       method: 'PUT',
       body: JSON.stringify(customerData),
@@ -28,7 +28,7 @@ const customerService = {
   },
 
   // Delete customer
-  deleteCustomer: async (id) => {
+  delete: async (id) => {
     return await apiCall(`/customers/${id}`, {
       method: 'DELETE',
     });

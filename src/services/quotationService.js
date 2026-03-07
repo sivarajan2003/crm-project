@@ -2,18 +2,18 @@ import apiCall from './api';
 
 const quotationService = {
   // Get all quotations
-  getAllQuotations: async (filters = {}) => {
+  getAll: async (filters = {}) => {
     const queryParams = new URLSearchParams(filters).toString();
     return await apiCall(`/quotations${queryParams ? `?${queryParams}` : ''}`);
   },
 
   // Get quotation by ID
-  getQuotationById: async (id) => {
+  getById: async (id) => {
     return await apiCall(`/quotations/${id}`);
   },
 
   // Create quotation
-  createQuotation: async (quotationData) => {
+  create: async (quotationData) => {
     return await apiCall('/quotations', {
       method: 'POST',
       body: JSON.stringify(quotationData),
@@ -21,7 +21,7 @@ const quotationService = {
   },
 
   // Update quotation
-  updateQuotation: async (id, quotationData) => {
+  update: async (id, quotationData) => {
     return await apiCall(`/quotations/${id}`, {
       method: 'PUT',
       body: JSON.stringify(quotationData),
@@ -29,7 +29,7 @@ const quotationService = {
   },
 
   // Delete quotation
-  deleteQuotation: async (id) => {
+  delete: async (id) => {
     return await apiCall(`/quotations/${id}`, {
       method: 'DELETE',
     });

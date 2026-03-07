@@ -7,7 +7,12 @@ import {
   Select,
   Avatar,
   Pagination,
-  Grid
+  Grid,
+  message,
+  Spin,
+  Popconfirm,
+  Table,
+  Tag
 } from "antd";
 import {
   SearchOutlined,
@@ -17,21 +22,173 @@ import {
   CalendarOutlined,
   CheckCircleOutlined,
   FilterOutlined,
-  DownOutlined
+  DownOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  WhatsAppOutlined
 } from "@ant-design/icons";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Typography } from "antd";
 import { Modal, Form, DatePicker } from "antd";
+import { activityService, leadService, customerService, dealService } from "../../services";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 const { Title, Text } = Typography;
+const { TextArea } = Input;
+
 export default function Activities() {
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
   const [searchText, setSearchText] = useState("");
   const [open, setOpen] = useState(false);
-const [form] = Form.useForm();
+  const [form] = Form.useForm();
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [editingActivity, setEditingActivity] = useState(null);
+  const [filterType, setFilterType] = useState("All");
+  const [relatedType, setRelatedType] = useState(null);
+  const [leads, setLeads] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [deals, setDeals] = useState([]);
+  
+  useEffect(() => {
+    fetchActivities();
+    fetchLeads();
+    fetchCustomers();
+    fetchDeals();
+  }, []);
+
+  const fetchActivities = async () => {
+    setLoading(true);
+    try {
+      const response = await activityService.getAll();
+      if (response.success) {
+        setActivities(response.data || []);
+      }
+    } catch (error) {
+      message.error('Failed to load activities');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchLeads = async () => {
+    try {
+      const response = await leadService.getAll();
+      if (response.success) {
+        setLeads(response.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to load leads');
+    }
+  };
+
+  const fetchCustomers = async () => {
+    try {
+      const response = await customerService.getAll();
+      if (response.success) {
+        setCustomers(response.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to load customers');
+    }
+  };
+
+  const fetchDeals = async () => {
+    try {
+      const response = await dealService.getAll();
+      if (response.success) {
+        setDeals(response.data || []);
+      }
+    } catch (error) {
+      console.error('Failed to load deals');
+    }
+  };
+
+  const handleSubmit = async (values) => {
+    try {
+      const formattedValues = {
+        ...values,
+        activity_date: values.activity_date ? values.activity_date.toISOString() : new Date().toISOString()
+      };
+
+      const response = editingActivity
+        ? await activityService.update(editingActivity.id, formattedValues)
+        : await activityService.create(formattedValues);
+      
+      if (response.success) {
+        message.success(editingActivity ? 'Activity updated successfully' : 'Activity created successfully');
+        fetchActivities();
+        setOpen(false);
+        setEditingActivity(null);
+        form.resetFields();
+      }
+    } catch (error) {
+      message.error('Operation failed');
+    }
+  };
+
+  const handleEdit = (activity) => {
+    setEditingActivity(activity);
+    setRelatedType(activity.related_type);
+    form.setFieldsValue({
+      type: activity.type,
+      related_type: activity.related_type,
+      related_id: activity.related_id,
+      notes: activity.notes,
+      activity_date: activity.activity_date ? dayjs(activity.activity_date) : null
+    });
+    setOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await activityService.delete(id);
+      if (response.success) {
+        message.success('Activity deleted successfully');
+        fetchActivities();
+      }
+    } catch (error) {
+      message.error('Delete failed');
+    }
+  };
+
+  const handleAddNew = () => {
+    setEditingActivity(null);
+    setRelatedType(null);
+    form.resetFields();
+    setOpen(true);
+  };
+
+  const handleRelatedTypeChange = (value) => {
+    setRelatedType(value);
+    form.setFieldsValue({ related_id: null }); // Reset related_id when type changes
+  };
+
+  const getRelatedOptions = () => {
+    switch (relatedType) {
+      case 'Lead':
+        return leads.map(lead => ({
+          value: lead.id,
+          label: `${lead.name} (${lead.lead_code})`
+        }));
+      case 'Customer':
+        return customers.map(customer => ({
+          value: customer.id,
+          label: `${customer.name} - ${customer.email || 'No email'}`
+        }));
+      case 'Deal':
+        return deals.map(deal => ({
+          value: deal.id,
+          label: `${deal.deal_name} (${deal.stage})`
+        }));
+      default:
+        return [];
+    }
+  };
+
   // Dutch specific styles mapping 
   const styles = {
     page: { padding: "8px 24px", minHeight: "100vh", width: "100%", background: "#f8fafc" },
@@ -64,369 +221,351 @@ const [form] = Form.useForm();
     visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut", delay: 0.2 } }
   };
 
-  /* ================= DATA ================= */
-  const activities = [
-    {
-      id: 1, section: "Today", type: "Call", title: "Phone Call",
-      subtitle: "Website Redesign", time: "3:00 PM", owner: "John Smith"
-    },
-    {
-      id: 2, section: "Today", type: "Email", title: "Follow-Up Email",
-      subtitle: "CRM Software Deal", time: "Today", owner: "Sarah Lee"
-    },
-    {
-      id: 3, section: "Yesterday", type: "Meeting", title: "Prepare proposal for Acme Corp",
-      subtitle: "Website Redesign", time: "Apr 23, 2024", owner: "John Smith"
-    },
-    {
-      id: 4, section: "Earlier", type: "Task", title: "Demo call with David Brown",
-      subtitle: "Beta Solutions", time: "Apr 23, 2024", owner: "Michael Clark"
-    }
-  ];
-
   const iconMap = {
     Call: <PhoneOutlined style={{ fontSize: 18, color: "#10b981" }} />,
     Email: <MailOutlined style={{ fontSize: 18, color: "#3b82f6" }} />,
     Meeting: <CalendarOutlined style={{ fontSize: 18, color: "#6366f1" }} />,
-    Task: <CheckCircleOutlined style={{ fontSize: 18, color: "#f59e0b" }} />
+    WhatsApp: <WhatsAppOutlined style={{ fontSize: 18, color: "#25d366" }} />
   };
 
   const bgMap = {
     Call: "#d1fae5",
     Email: "#dbeafe",
     Meeting: "#e0e7ff",
-    Task: "#fef3c7"
+    WhatsApp: "#d1fae5"
   };
 
-  const filteredActivities = activities.filter((item) =>
-    item.title.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const filteredActivities = activities.filter((item) => {
+    const matchSearch = item.notes?.toLowerCase().includes(searchText.toLowerCase()) ||
+                       item.type?.toLowerCase().includes(searchText.toLowerCase());
+    const matchType = filterType === "All" || item.type === filterType;
+    return matchSearch && matchType;
+  });
 
-  const grouped = ["Today", "Yesterday", "Earlier"];
+  const columns = [
+    {
+      title: "Type",
+      dataIndex: "type",
+      render: (type) => (
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <Avatar
+            size={40}
+            style={{
+              background: bgMap[type],
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+            icon={iconMap[type]}
+          />
+          <span style={{ fontWeight: 600, color: "#111827" }}>{type}</span>
+        </div>
+      ),
+    },
+    {
+      title: "Notes",
+      dataIndex: "notes",
+      render: (text) => <span style={{ color: "#4b5563" }}>{text || 'N/A'}</span>
+    },
+    {
+      title: "Related To",
+      key: "related",
+      render: (_, record) => (
+        <span style={{ color: "#4b5563" }}>
+          {record.related_type ? `${record.related_type} #${record.related_id}` : 'N/A'}
+        </span>
+      ),
+    },
+    {
+      title: "Date",
+      dataIndex: "activity_date",
+      render: (date) => (
+        <span style={{ color: "#4b5563" }}>
+          {date ? dayjs(date).format('MMM DD, YYYY HH:mm') : 'N/A'}
+        </span>
+      ),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record) => (
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record)}
+          >
+            Edit
+          </Button>
+          <Popconfirm
+            title="Delete activity"
+            description="Are you sure you want to delete this activity?"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button type="link" danger icon={<DeleteOutlined />}>
+              Delete
+            </Button>
+          </Popconfirm>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div style={styles.page}>
-
-      {/* ================= HEADER ================= */}
-      
-<Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
-  <Col>
-    <Title level={2} style={{ margin: 0 }}>
-       Activities
-    </Title>
-
-    <Text type="secondary">
-     Track and manage your daily tasks and meetings
-    </Text>
-  </Col>
-        <Col>
-          <Button
-  type="primary"
-  icon={<PlusOutlined />}
-  style={styles.primaryBtn}
-  onClick={() => setOpen(true)}
->
-  Add Activity
-</Button>
-        </Col>
-      </Row>
-
-      {/* ================= FILTER BAR ================= */}
-      <Card bordered={false} style={styles.filterCard} bodyStyle={{ padding: 0 }}>
-        <Row gutter={[12, 12]} align="middle">
-          
-          {/* Action Filters Group */}
-          <Col xs={24} sm={24} lg={16}>
-             <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                <Button style={{ ...styles.secondaryBtn, color: "#1677ff", borderColor: "#1677ff", background: "#f0f5ff" }}>
-                  All Activities <DownOutlined style={{ fontSize: 10 }}/>
-                </Button>
-
-                <Button style={styles.secondaryBtn}>
-                  My Activities <DownOutlined style={{ fontSize: 10 }}/>
-                </Button>
-
-                <Button style={styles.secondaryBtn}>
-                  Activity Type: All <DownOutlined style={{ fontSize: 10 }}/>
-                </Button>
-
-                <Button style={styles.secondaryBtn}>
-                  Due Date: All <DownOutlined style={{ fontSize: 10 }}/>
-                </Button>
-
-                <Button icon={<FilterOutlined />} style={styles.secondaryBtn}>
-                  Filter
-                </Button>
-             </div>
-          </Col>
-
-          {/* Search Box */}
-          <Col xs={24} sm={24} lg={8} style={{ display: "flex", justifyContent: screens.lg ? "flex-end" : "flex-start" }}>
-            <Input
-              prefix={<SearchOutlined style={{ color: "#9ca3af" }} />}
-              placeholder="Search activities..."
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              style={{
-                width: screens.xs ? "100%" : 280,
-                height: 40,
-                borderRadius: 8,
-                fontFamily: '"Inter", sans-serif'
-              }}
-            />
-          </Col>
-        </Row>
-      </Card>
-
-      {/* ================= SUMMARY CARDS (Animated) ================= */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        {[
-          { title: "Upcoming", count: 16, color: "#10b981", bg: "#10b981" },
-          { title: "Overdue", count: 5, color: "#ef4444", bg: "#ef4444" },
-          { title: "Completed", count: 37, color: "#3b82f6", bg: "#3b82f6" },
-          { title: "Meetings Today", count: 2, color: "#8b5cf6", bg: "#8b5cf6" },
-        ].map((item, index) => (
-          <Col xs={24} sm={12} md={6} key={index}>
-            <motion.div
-              custom={index}
-              initial="hidden"
-              animate="visible"
-              whileHover={{ y: -6, boxShadow: "0 12px 35px rgba(2,6,23,0.12)" }}
-              variants={cardAnimation}
-              style={{ ...styles.kpiCard, borderTop: `4px solid ${item.bg}` }}
-            >
-              <div style={{ fontSize: 13, fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.5px", fontFamily: '"Inter", sans-serif' }}>
-                {item.title}
-              </div>
-
-              <div
-                style={{
-                  fontSize: 32,
-                  fontWeight: 800,
-                  marginTop: 10,
-                  color: item.color,
-                  lineHeight: 1,
-                  fontFamily: '"Inter", sans-serif'
-                }}
+      {loading && !activities.length ? (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+          <Spin size="large" />
+        </div>
+      ) : (
+        <>
+          {/* ================= HEADER ================= */}
+          <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
+            <Col>
+              <Title level={2} style={{ margin: 0 }}>
+                Activities
+              </Title>
+              <Text type="secondary">
+                Track and manage your daily tasks and meetings
+              </Text>
+            </Col>
+            <Col>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                style={styles.primaryBtn}
+                onClick={handleAddNew}
               >
-                {item.count}
-              </div>
-            </motion.div>
-          </Col>
-        ))}
-      </Row>
+                Add Activity
+              </Button>
+            </Col>
+          </Row>
 
-      {/* ================= TIMELINE CARD ================= */}
-      <motion.div variants={layoutAnimation} initial="hidden" animate="visible">
-        <Card
-          bordered={false}
-          style={{ ...styles.roundedCard, padding: 0 }}
-        >
-          <div style={{ 
-            padding: "20px 24px", 
-            borderBottom: "1px solid #f0f0f0",
-            fontSize: 16, 
-            fontWeight: 600, 
-            color: "#111827",
-            fontFamily: '"Inter", sans-serif'
-          }}>
-            Activity Timeline
-          </div>
-
-          <div style={{ padding: "0 24px" }}>
-            {grouped.map((section) => {
-              const sectionActivities = filteredActivities.filter((item) => item.section === section);
-              
-              if (sectionActivities.length === 0) return null;
-
-              return (
-                <div key={section} style={{ paddingTop: 20 }}>
+          {/* ================= SUMMARY CARDS (Animated) ================= */}
+          <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+            {[
+              { title: "Total", count: activities.length, color: "#1677ff", bg: "#1677ff" },
+              { title: "Calls", count: activities.filter(a => a.type === 'Call').length, color: "#10b981", bg: "#10b981" },
+              { title: "Emails", count: activities.filter(a => a.type === 'Email').length, color: "#3b82f6", bg: "#3b82f6" },
+              { title: "Meetings", count: activities.filter(a => a.type === 'Meeting').length, color: "#8b5cf6", bg: "#8b5cf6" },
+            ].map((item, index) => (
+              <Col xs={24} sm={12} md={6} key={index}>
+                <motion.div
+                  custom={index}
+                  initial="hidden"
+                  animate="visible"
+                  whileHover={{ y: -6, boxShadow: "0 12px 35px rgba(2,6,23,0.12)" }}
+                  variants={cardAnimation}
+                  style={{ ...styles.kpiCard, borderTop: `4px solid ${item.bg}` }}
+                >
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.5px", fontFamily: '"Inter", sans-serif' }}>
+                    {item.title}
+                  </div>
                   <div
                     style={{
-                      fontSize: 14,
-                      fontWeight: 700,
-                      marginBottom: 12,
-                      color: "#111827",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.5px",
+                      fontSize: 32,
+                      fontWeight: 800,
+                      marginTop: 10,
+                      color: item.color,
+                      lineHeight: 1,
                       fontFamily: '"Inter", sans-serif'
                     }}
                   >
-                    {section}
+                    {item.count}
                   </div>
+                </motion.div>
+              </Col>
+            ))}
+          </Row>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                    {sectionActivities.map((item, idx) => (
-                      <div
-                        key={item.id}
-                        style={{
-                          display: "flex",
-                          flexDirection: screens.xs ? "column" : "row",
-                          justifyContent: "space-between",
-                          alignItems: screens.xs ? "flex-start" : "center",
-                          gap: screens.xs ? 12 : 0,
-                          padding: "16px",
-                          borderRadius: 12,
-                          border: "1px solid #f1f5f9",
-                          background: "#ffffff",
-                          transition: "all 0.2s ease",
-                          cursor: "pointer",
-                          marginBottom: idx === sectionActivities.length - 1 ? 20 : 0
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.borderColor = "#e2e8f0";
-                          e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.03)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.borderColor = "#f1f5f9";
-                          e.currentTarget.style.boxShadow = "none";
-                        }}
-                      >
-                        {/* LEFT (Icon + Titles) */}
-                        <div style={{ display: "flex", gap: 16, width: "100%", alignItems: "center" }}>
-                          <Avatar
-                            size={48}
-                            style={{
-                              background: bgMap[item.type],
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center"
-                            }}
-                            icon={iconMap[item.type]}
-                          />
-
-                          <div>
-                            <div style={{ fontWeight: 600, fontSize: 15, color: "#111827", fontFamily: '"Inter", sans-serif' }}>
-                              {item.title}
-                            </div>
-                            <div style={{ fontSize: 13, color: "#6b7280", marginTop: 2, fontFamily: '"Inter", sans-serif' }}>
-                              {item.subtitle}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* RIGHT (Time + Owner) */}
-                        <div style={{ textAlign: screens.xs ? "left" : "right", width: screens.xs ? "100%" : "auto", paddingLeft: screens.xs ? 64 : 0 }}>
-                          <div style={{ fontSize: 14, fontWeight: 500, color: "#374151", fontFamily: '"Inter", sans-serif' }}>
-                            {item.time}
-                          </div>
-                          <div style={{ fontSize: 13, color: "#9ca3af", marginTop: 2, fontFamily: '"Inter", sans-serif' }}>
-                            {item.owner}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+          {/* ================= FILTER BAR ================= */}
+          <Card variant="borderless" style={styles.filterCard} bodyStyle={{ padding: 0 }}>
+            <Row gutter={[12, 12]} align="middle">
+              <Col xs={24} sm={24} lg={16}>
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                  {["All", "Call", "Email", "Meeting", "WhatsApp"].map((type) => (
+                    <Button
+                      key={type}
+                      style={{
+                        ...styles.secondaryBtn,
+                        ...(filterType === type ? { color: "#1677ff", borderColor: "#1677ff", background: "#f0f5ff" } : {})
+                      }}
+                      onClick={() => setFilterType(type)}
+                    >
+                      {type}
+                    </Button>
+                  ))}
                 </div>
-              );
-            })}
-          </div>
+              </Col>
 
-          {/* ================= PAGINATION ================= */}
-          <div style={{ 
-            padding: "20px 24px", 
-            borderTop: "1px solid #f0f0f0", 
-            display: "flex", 
-            justifyContent: "flex-end" 
-          }}>
-            <Pagination defaultCurrent={1} total={20} pageSize={5} />
-          </div>
-        </Card>
-      </motion.div>
+              <Col xs={24} sm={24} lg={8} style={{ display: "flex", justifyContent: screens.lg ? "flex-end" : "flex-start" }}>
+                <Input
+                  prefix={<SearchOutlined style={{ color: "#9ca3af" }} />}
+                  placeholder="Search activities..."
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  style={{
+                    width: screens.xs ? "100%" : 280,
+                    height: 40,
+                    borderRadius: 8,
+                    fontFamily: '"Inter", sans-serif'
+                  }}
+                />
+              </Col>
+            </Row>
+          </Card>
+
+          {/* ================= ACTIVITIES TABLE ================= */}
+          <motion.div variants={layoutAnimation} initial="hidden" animate="visible">
+            <Card
+              variant="borderless"
+              style={{ ...styles.roundedCard, padding: 0 }}
+            >
+              <div style={{ 
+                padding: "20px 24px", 
+                borderBottom: "1px solid #f0f0f0",
+                fontSize: 16, 
+                fontWeight: 600, 
+                color: "#111827",
+                fontFamily: '"Inter", sans-serif'
+              }}>
+                Activity Timeline ({filteredActivities.length})
+              </div>
+              <Table
+                columns={columns}
+                dataSource={filteredActivities}
+                rowKey="id"
+                loading={loading}
+                pagination={{ pageSize: 10 }}
+                scroll={{ x: true }}
+              />
+            </Card>
+          </motion.div>
+        </>
+      )}
+
+      {/* ================= ADD/EDIT MODAL ================= */}
       <Modal
-  title="Add Activity"
-  open={open}
-  onCancel={() => setOpen(false)}
-  footer={null}
-  centered
-  width={600}
-  zIndex={2000}
->
-  <Form
-    form={form}
-    layout="vertical"
-  >
-    <Row gutter={12}>
-      <Col span={12}>
-        <Form.Item
-          label="Activity Title"
-          name="title"
-          rules={[{ required: true }]}
+        title={editingActivity ? "Edit Activity" : "Add Activity"}
+        open={open}
+        onCancel={() => {
+          setOpen(false);
+          setEditingActivity(null);
+          setRelatedType(null);
+          form.resetFields();
+        }}
+        footer={null}
+        centered
+        width={600}
+        zIndex={2000}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
         >
-          <Input placeholder="Enter activity title" />
-        </Form.Item>
-      </Col>
+          <Row gutter={12}>
+            <Col span={12}>
+              <Form.Item
+                label="Activity Type"
+                name="type"
+                rules={[{ required: true, message: 'Please select type' }]}
+              >
+                <Select placeholder="Select type">
+                  <Option value="Call">Call</Option>
+                  <Option value="Email">Email</Option>
+                  <Option value="Meeting">Meeting</Option>
+                  <Option value="WhatsApp">WhatsApp</Option>
+                </Select>
+              </Form.Item>
+            </Col>
 
-      <Col span={12}>
-        <Form.Item
-          label="Activity Type"
-          name="type"
-        >
-          <Select>
-            <Option value="Call">Call</Option>
-            <Option value="Email">Email</Option>
-            <Option value="Meeting">Meeting</Option>
-            <Option value="Task">Task</Option>
-          </Select>
-        </Form.Item>
-      </Col>
-    </Row>
+            <Col span={12}>
+              <Form.Item
+                label="Activity Date"
+                name="activity_date"
+                rules={[{ required: true, message: 'Please select date' }]}
+              >
+                <DatePicker 
+                  showTime 
+                  style={{ width: "100%" }} 
+                  format="YYYY-MM-DD HH:mm"
+                />
+              </Form.Item>
+            </Col>
+          </Row>
 
-    <Form.Item
-      label="Description"
-      name="subtitle"
-    >
-      <Input placeholder="Enter description" />
-    </Form.Item>
+          <Form.Item
+            label="Notes"
+            name="notes"
+          >
+            <TextArea rows={4} placeholder="Enter activity notes" />
+          </Form.Item>
 
-    <Row gutter={12}>
-      <Col span={12}>
-        <Form.Item
-          label="Owner"
-          name="owner"
-        >
-          <Input placeholder="Assigned person" />
-        </Form.Item>
-      </Col>
+          <Row gutter={12}>
+            <Col span={12}>
+              <Form.Item
+                label="Related To"
+                name="related_type"
+              >
+                <Select 
+                  placeholder="Select type" 
+                  allowClear
+                  onChange={handleRelatedTypeChange}
+                >
+                  <Option value="Lead">Lead</Option>
+                  <Option value="Customer">Customer</Option>
+                  <Option value="Deal">Deal</Option>
+                </Select>
+              </Form.Item>
+            </Col>
 
-      <Col span={12}>
-        <Form.Item
-          label="Due Date"
-          name="date"
-        >
-          <DatePicker style={{ width: "100%" }} />
-        </Form.Item>
-      </Col>
-    </Row>
+            <Col span={12}>
+              <Form.Item
+                label="Related Record"
+                name="related_id"
+              >
+                <Select 
+                  placeholder={relatedType ? `Select ${relatedType}` : "Select type first"}
+                  disabled={!relatedType}
+                  showSearch
+                  optionFilterProp="label"
+                  allowClear
+                  options={getRelatedOptions()}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
 
-    <Row gutter={10}>
-      <Col span={12}>
-        <Button
-          block
-          onClick={() => setOpen(false)}
-        >
-          Cancel
-        </Button>
-      </Col>
+          <Row gutter={10}>
+            <Col span={12}>
+              <Button
+                block
+                onClick={() => {
+                  setOpen(false);
+                  setEditingActivity(null);
+                  setRelatedType(null);
+                  form.resetFields();
+                }}
+              >
+                Cancel
+              </Button>
+            </Col>
 
-      <Col span={12}>
-        <Button
-          type="primary"
-          block
-          onClick={() => {
-            form.validateFields().then((values) => {
-              console.log(values);
-              setOpen(false);
-              form.resetFields();
-            });
-          }}
-        >
-          Save Activity
-        </Button>
-      </Col>
-    </Row>
-  </Form>
-</Modal>
+            <Col span={12}>
+              <Button
+                type="primary"
+                block
+                htmlType="submit"
+              >
+                {editingActivity ? 'Update' : 'Create'} Activity
+              </Button>
+            </Col>
+          </Row>
+        </Form>
+      </Modal>
     </div>
   );
 }

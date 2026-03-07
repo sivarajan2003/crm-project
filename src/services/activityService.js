@@ -2,18 +2,18 @@ import apiCall from './api';
 
 const activityService = {
   // Get all activities
-  getAllActivities: async (filters = {}) => {
+  getAll: async (filters = {}) => {
     const queryParams = new URLSearchParams(filters).toString();
     return await apiCall(`/activities${queryParams ? `?${queryParams}` : ''}`);
   },
 
   // Get activity by ID
-  getActivityById: async (id) => {
+  getById: async (id) => {
     return await apiCall(`/activities/${id}`);
   },
 
   // Create activity
-  createActivity: async (activityData) => {
+  create: async (activityData) => {
     return await apiCall('/activities', {
       method: 'POST',
       body: JSON.stringify(activityData),
@@ -21,7 +21,7 @@ const activityService = {
   },
 
   // Update activity
-  updateActivity: async (id, activityData) => {
+  update: async (id, activityData) => {
     return await apiCall(`/activities/${id}`, {
       method: 'PUT',
       body: JSON.stringify(activityData),
@@ -29,7 +29,7 @@ const activityService = {
   },
 
   // Delete activity
-  deleteActivity: async (id) => {
+  delete: async (id) => {
     return await apiCall(`/activities/${id}`, {
       method: 'DELETE',
     });

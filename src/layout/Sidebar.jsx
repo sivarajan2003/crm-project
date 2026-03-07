@@ -94,7 +94,7 @@ const sidebarBgColor = "#ffffff";
       label: "Sales",
       children: [
         {
-          key: "product",
+          key: "leads",
           icon: <AppstoreOutlined style={{ fontSize: 18 }} />,
           label: "Leads",
         },
@@ -130,6 +130,12 @@ const sidebarBgColor = "#ffffff";
       key: "deals",
       icon: <DollarOutlined style={{ fontSize: 18 }} />,
       label: "Deals",
+    },
+    // TASKS
+    {
+      key: "tasks",
+      icon: <FileText size={18} />,
+      label: "Tasks",
     },
     // PRODUCTS
     {
@@ -173,6 +179,11 @@ const sidebarBgColor = "#ffffff";
       label: "Administration",
       children: [
         {
+          key: "users",
+          icon: <UserOutlined style={{ fontSize: 18 }} />,
+          label: "Users",
+        },
+        {
           key: "contact",
           icon: <UserOutlined style={{ fontSize: 18 }} />,
           label: "Contacts",
@@ -184,6 +195,29 @@ const sidebarBgColor = "#ffffff";
         },
       ],
     },
+    // SUPPORT & FINANCE GROUP
+    {
+      key: "support",
+      icon: <DatabaseOutlined style={{ fontSize: 18 }} />,
+      label: "Support & Finance",
+      children: [
+        {
+          key: "tickets",
+          icon: <FileText size={18} />,
+          label: "Tickets",
+        },
+        {
+          key: "payments",
+          icon: <DollarOutlined style={{ fontSize: 18 }} />,
+          label: "Payments",
+        },
+        {
+          key: "notes",
+          icon: <FileText size={18} />,
+          label: "Notes",
+        },
+      ],
+    },
   ];
 
   // Set the correct menu folder open on mount / navigate if it matches child keys
@@ -191,7 +225,7 @@ useEffect(() => {
   const adminMenu = ["contact", "users", "roles", "admin"];
 
   const salesMenu = [
-    "product",
+    "leads",
     "opportunities",
     "quotes",
     "activities",
@@ -206,6 +240,13 @@ useEffect(() => {
     "marketing"
   ];
 
+  const supportMenu = [
+    "tickets",
+    "payments",
+    "notes",
+    "support"
+  ];
+
   if (adminMenu.includes(selectedKey)) {
     setOpenMenu("admin");
   } 
@@ -214,6 +255,9 @@ useEffect(() => {
   } 
   else if (marketingMenu.includes(selectedKey)) {
     setOpenMenu("marketing");
+  }
+  else if (supportMenu.includes(selectedKey)) {
+    setOpenMenu("support");
   }
 
 }, [selectedKey]);

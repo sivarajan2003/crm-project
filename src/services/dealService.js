@@ -2,18 +2,18 @@ import apiCall from './api';
 
 const dealService = {
   // Get all deals
-  getAllDeals: async (filters = {}) => {
+  getAll: async (filters = {}) => {
     const queryParams = new URLSearchParams(filters).toString();
     return await apiCall(`/deals${queryParams ? `?${queryParams}` : ''}`);
   },
 
   // Get deal by ID
-  getDealById: async (id) => {
+  getById: async (id) => {
     return await apiCall(`/deals/${id}`);
   },
 
   // Create deal
-  createDeal: async (dealData) => {
+  create: async (dealData) => {
     return await apiCall('/deals', {
       method: 'POST',
       body: JSON.stringify(dealData),
@@ -21,7 +21,7 @@ const dealService = {
   },
 
   // Update deal
-  updateDeal: async (id, dealData) => {
+  update: async (id, dealData) => {
     return await apiCall(`/deals/${id}`, {
       method: 'PUT',
       body: JSON.stringify(dealData),
@@ -29,7 +29,7 @@ const dealService = {
   },
 
   // Delete deal
-  deleteDeal: async (id) => {
+  delete: async (id) => {
     return await apiCall(`/deals/${id}`, {
       method: 'DELETE',
     });

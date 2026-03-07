@@ -1,78 +1,67 @@
-import React, { useState } from "react";
-import { Table, Tag, Typography, Button, Space, Input } from "antd";
+import React, { useState, useEffect } from "react";
+import { Table, Tag, Typography, Button, Space, Input, message, Spin } from "antd";
 import { motion } from "framer-motion";
 import { Search, Filter, Facebook, Chrome } from "lucide-react";
+import { metaService } from "../../services";
+import dayjs from "dayjs";
 
 const { Title, Text } = Typography;
 
 const CampaignsList = () => {
-
   const [searchText, setSearchText] = useState("");
+  const [campaigns, setCampaigns] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const CRM_PRIMARY = "#1C2244";
 
-  const data = [
-    {
-      key: "1",
-      platform: "Meta",
-      campaignName: "Retargeting_Website_Visitors_Q3",
-      status: "Active",
-      budget: "₹5,000 / day",
-      spend: "₹42,300",
-      roas: "3.4x",
-    },
-    {
-      key: "2",
-      platform: "Google",
-      campaignName: "Search_Brand_Keywords",
-      status: "Active",
-      budget: "₹2,000 / day",
-      spend: "₹14,500",
-      roas: "5.1x",
-    },
-    {
-      key: "3",
-      platform: "Meta",
-      campaignName: "Lead_Gen_Form_Promo",
-      status: "Paused",
-      budget: "₹1,500 / day",
-      spend: "₹4,500",
-      roas: "1.2x",
-    },
-  ];
-const filteredData = data.filter((item) =>
-  item.campaignName.toLowerCase().includes(searchText.toLowerCase()) ||
-  item.platform.toLowerCase().includes(searchText.toLowerCase())
-);
+  useEffect(() => {
+    fetchCampaigns();
+  }, []);
+
+  const fetchCampaigns = async () => {
+    setLoading(true);
+    try {
+      const response = await metaService.getCampaigns();
+      if (response.success) {
+        setCampaigns(response.data || []);
+      }
+    } catch (error) {
+      message.error('Failed to load campaigns');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredData = campaigns.filter((item) =>
+    item.campaign_name?.toLowerCase().includes(searchText.toLowerCase()) ||
+    item.status?.toLowerCase().includes(searchText.toLowerCase())
+  );
+
   const columns = [
     {
       title: "Platform",
-      dataIndex: "platform",
       key: "platform",
-      render: (platform) => {
-        const isMeta = platform === "Meta";
-
-        return (
-          <Space>
-            {isMeta ? (
-              <Facebook size={18} color="#1877F2" />
-            ) : (
-              <Chrome size={18} color="#DB4437" />
-            )}
-            <Text>{platform}</Text>
-          </Space>
-        );
-      },
+      render: () => (
+        <Space>
+          <Facebook size={18} color="#1877F2" />
+          <Text>Meta</Text>
+        </Space>
+      ),
     },
 
     {
       title: "Campaign Name",
-      dataIndex: "campaignName",
-      key: "campaignName",
-      render: (text) => (
-        <Text strong style={{ fontSize: "14px" }}>
-          {text}
-        </Text>
+      dataIndex: "campaign_name",
+      key: "campaign_name",
+      render: (text, record) => (
+        <div>
+          <Text strong style={{ fontSize: "14px" }}>
+            {text}
+          </Text>
+          <div style={{ fontSize: 12, color: "#6b7280" }}>
+            ID: {record.meta_campaign_id}
+          </div>
+        </div>
       ),
     },
 
@@ -81,7 +70,8 @@ const filteredData = data.filter((item) =>
       dataIndex: "status",
       key: "status",
       render: (status) => {
-        const active = status === "Active";
+        const active = status === "ACTIVE";
+        const paused = status === "PAUSED";
 
         return (
           <Tag
@@ -89,51 +79,54 @@ const filteredData = data.filter((item) =>
               borderRadius: 20,
               padding: "4px 14px",
               fontWeight: 500,
-              border: active ? "1px solid #b7eb8f" : "1px solid #ffa39e",
-              background: active ? "#f6ffed" : "#fff2f0",
-              color: active ? "#389e0d" : "#cf1322"
+              border: active ? "1px solid #b7eb8f" : paused ? "1px solid #ffd591" : "1px solid #ffa39e",
+              background: active ? "#f6ffed" : paused ? "#fff7e6" : "#fff2f0",
+              color: active ? "#389e0d" : paused ? "#d46b08" : "#cf1322"
             }}
           >
-            {status.toUpperCase()}
+            {status}
           </Tag>
         );
       },
     },
 
     {
-      title: "Budget",
-      dataIndex: "budget",
-      key: "budget",
-      render: (text) => <Text>{text}</Text>,
+      title: "Objective",
+      dataIndex: "objective",
+      key: "objective",
+      render: (text) => <Text>{text || 'N/A'}</Text>,
     },
 
     {
-      title: "Spend",
-      dataIndex: "spend",
-      key: "spend",
-      render: (text) => (
-        <Text strong style={{ color: "#111827" }}>
-          {text}
+      title: "Daily Budget",
+      dataIndex: "daily_budget",
+      key: "daily_budget",
+      render: (budget) => (
+        <Text>
+          {budget ? `₹${parseFloat(budget).toLocaleString('en-IN')}` : 'N/A'}
         </Text>
       ),
     },
 
     {
-      title: "ROAS (Return on Ad Spend)",
-      dataIndex: "roas",
-      key: "roas",
-      render: (roas) => (
-        <Tag
-          style={{
-            borderRadius: 8,
-            background: "#e6f4ff",
-            border: "1px solid #91caff",
-            color: "#0958d9",
-            fontWeight: 600
-          }}
-        >
-          {roas}
-        </Tag>
+      title: "Lifetime Budget",
+      dataIndex: "lifetime_budget",
+      key: "lifetime_budget",
+      render: (budget) => (
+        <Text strong style={{ color: "#111827" }}>
+          {budget ? `₹${parseFloat(budget).toLocaleString('en-IN')}` : 'N/A'}
+        </Text>
+      ),
+    },
+
+    {
+      title: "Created",
+      dataIndex: "created_at",
+      key: "created_at",
+      render: (date) => (
+        <Text style={{ color: "#6b7280" }}>
+          {date ? dayjs(date).format('MMM DD, YYYY') : 'N/A'}
+        </Text>
       ),
     },
   ];
@@ -145,9 +138,7 @@ const filteredData = data.filter((item) =>
       transition={{ duration: 0.4 }}
       style={{ padding: "24px" }}
     >
-
       {/* HEADER */}
-
       <div
         style={{
           display: "flex",
@@ -162,7 +153,7 @@ const filteredData = data.filter((item) =>
           </Title>
 
           <Text type="secondary">
-            Manage and monitor your active marketing campaigns.
+            Manage and monitor your active marketing campaigns from Meta Ads.
           </Text>
         </div>
 
@@ -192,7 +183,6 @@ const filteredData = data.filter((item) =>
       </div>
 
       {/* TABLE CARD */}
-
       <div
         style={{
           background: "#fff",
@@ -201,17 +191,30 @@ const filteredData = data.filter((item) =>
           boxShadow: "0 4px 18px rgba(0,0,0,0.05)",
         }}
       >
-        <Table
-          columns={columns}
-         dataSource={filteredData}
-          pagination={{
-            pageSize: 5,
-            position: ["bottomRight"],
-          }}
-          rowKey="key"
-        />
+        {loading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 0' }}>
+            <Spin size="large" />
+          </div>
+        ) : filteredData.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '40px 0' }}>
+            <Text type="secondary">
+              {campaigns.length === 0 
+                ? 'No campaigns found. Connect your Meta Ads account to see campaigns.'
+                : 'No campaigns match your search.'}
+            </Text>
+          </div>
+        ) : (
+          <Table
+            columns={columns}
+            dataSource={filteredData}
+            pagination={{
+              pageSize: 10,
+              position: ["bottomRight"],
+            }}
+            rowKey="id"
+          />
+        )}
       </div>
-
     </motion.div>
   );
 };

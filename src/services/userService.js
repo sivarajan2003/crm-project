@@ -2,17 +2,17 @@ import apiCall from './api';
 
 const userService = {
   // Get all users
-  getAllUsers: async () => {
+  getAll: async () => {
     return await apiCall('/users');
   },
 
   // Get user by ID
-  getUserById: async (id) => {
+  getById: async (id) => {
     return await apiCall(`/users/${id}`);
   },
 
   // Create user
-  createUser: async (userData) => {
+  create: async (userData) => {
     return await apiCall('/users', {
       method: 'POST',
       body: JSON.stringify(userData),
@@ -20,7 +20,7 @@ const userService = {
   },
 
   // Update user
-  updateUser: async (id, userData) => {
+  update: async (id, userData) => {
     return await apiCall(`/users/${id}`, {
       method: 'PUT',
       body: JSON.stringify(userData),
@@ -28,7 +28,7 @@ const userService = {
   },
 
   // Delete user
-  deleteUser: async (id) => {
+  delete: async (id) => {
     return await apiCall(`/users/${id}`, {
       method: 'DELETE',
     });

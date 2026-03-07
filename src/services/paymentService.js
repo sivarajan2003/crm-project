@@ -2,18 +2,18 @@ import apiCall from './api';
 
 const paymentService = {
   // Get all payments
-  getAllPayments: async (filters = {}) => {
+  getAll: async (filters = {}) => {
     const queryParams = new URLSearchParams(filters).toString();
     return await apiCall(`/payments${queryParams ? `?${queryParams}` : ''}`);
   },
 
   // Get payment by ID
-  getPaymentById: async (id) => {
+  getById: async (id) => {
     return await apiCall(`/payments/${id}`);
   },
 
   // Create payment
-  createPayment: async (paymentData) => {
+  create: async (paymentData) => {
     return await apiCall('/payments', {
       method: 'POST',
       body: JSON.stringify(paymentData),
@@ -21,7 +21,7 @@ const paymentService = {
   },
 
   // Update payment
-  updatePayment: async (id, paymentData) => {
+  update: async (id, paymentData) => {
     return await apiCall(`/payments/${id}`, {
       method: 'PUT',
       body: JSON.stringify(paymentData),
@@ -29,7 +29,7 @@ const paymentService = {
   },
 
   // Delete payment
-  deletePayment: async (id) => {
+  delete: async (id) => {
     return await apiCall(`/payments/${id}`, {
       method: 'DELETE',
     });

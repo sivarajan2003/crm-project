@@ -146,7 +146,7 @@ export default function Product() {
       </Row>
 
       {/* FILTER BAR  */}
-      <Card bordered={false} style={styles.filterCard} bodyStyle={{ padding: "16px 20px" }}>
+      <Card variant="borderless" style={styles.filterCard} bodyStyle={{ padding: "16px 20px" }}>
         <Row gutter={[16, 16]}>
           <Col xs={24} md={10}>
             <Input
@@ -188,7 +188,7 @@ export default function Product() {
 
       {/* TABLE */}
       <Card
-        bordered={false}
+        variant="borderless"
         style={{ ...styles.roundedCard, padding: 0 }}
       >
         {/* DESKTOP + TABLET TABLE */}
